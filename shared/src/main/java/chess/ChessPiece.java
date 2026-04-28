@@ -54,23 +54,6 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
-        // int row = myPosition.getRow();
-        // int col = myPosition.getColumn(); 
-        // if(type == PieceType.PAWN){
-        //     // if(color == ChessGame.TeamColor.WHITE){
-        //     //     if(row == 2){
-        //     //         moves.add(new ChessMove(myPosition, new ChessPosition(row+1, col)));
-        //     //         moves.add(new ChessMove(myPosition, new ChessPosition(row+2, col)));
-        //     //     }
-        //     // }
-        //     // else{
-        //     //     if(row == 7){
-        //     //         moves.add(new ChessMove(myPosition, new ChessPosition(row-1, col)));
-        //     //         moves.add(new ChessMove(myPosition, new ChessPosition(row-2, col)));
-        //     //     }
-        //     // }
-        // }
-        // else 
         if(type == PieceType.KING){
             int[][] kingVectors = {{1,1},{1,0},{1,-1},{0,1},{0,-1},{-1,1},{-1,0},{-1,-1}};
             for(int i = 0; i < kingVectors.length;i++){
