@@ -54,17 +54,14 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
-        if(type == PieceType.KING){
+        if(type == PieceType.KING){ // Movement options for KING
             int[][] kingVectors = {{1,1},{1,0},{1,-1},{0,1},{0,-1},{-1,1},{-1,0},{-1,-1}};
             for(int i = 0; i < kingVectors.length;i++){
-
                 ChessPosition newPosition = myPosition.add(kingVectors[i]);
                 if(!newPosition.inBoard()){
                     continue;
                 }
-
                 ChessPiece pieceAtNew = board.getPiece(newPosition);
-                
                 if(pieceAtNew == null){
                     moves.add(new ChessMove(myPosition,newPosition));
                 }
@@ -78,7 +75,7 @@ public class ChessPiece {
                 }
             }
         }
-        else if(type == PieceType.QUEEN){
+        else if(type == PieceType.QUEEN){ // Movement options for QUEEN
             int[][] queenVectors = {{1,1},{1,0},{1,-1},{0,1},{0,-1},{-1,1},{-1,0},{-1,-1}};
             for(int i = 0; i < queenVectors.length;i++){
                 for(int j = 1; j < 8; j++){
@@ -87,7 +84,6 @@ public class ChessPiece {
                         continue;
                     }
                     ChessPiece pieceAtNew = board.getPiece(newPosition);
-                    
                     if(pieceAtNew == null){
                         moves.add(new ChessMove(myPosition,newPosition));
                     }
@@ -105,7 +101,7 @@ public class ChessPiece {
                 
             }
         }
-        else if(type == PieceType.ROOK){
+        else if(type == PieceType.ROOK){ // Movement options for ROOK (not castling)
             int[][] rookVectors = {{1,0},{0,1},{0,-1},{-1,0}};
             for(int i = 0; i < rookVectors.length;i++){
                 for(int j = 1; j < 8; j++){
@@ -114,7 +110,6 @@ public class ChessPiece {
                         continue;
                     }
                     ChessPiece pieceAtNew = board.getPiece(newPosition);
-                    
                     if(pieceAtNew == null){
                         moves.add(new ChessMove(myPosition,newPosition));
                     }
@@ -129,10 +124,9 @@ public class ChessPiece {
                         throw new RuntimeException("Rook Move Error"); 
                     }
                 }
-                
             }
         }
-        else if(type == PieceType.BISHOP){
+        else if(type == PieceType.BISHOP){ // Movement options for BISHOP
             int[][] bishopVectors = {{1,1},{-1,1},{1,-1},{-1,-1}};
             for(int i = 0; i < bishopVectors.length;i++){
                 for(int j = 1; j < 8; j++){
@@ -141,7 +135,6 @@ public class ChessPiece {
                         continue;
                     }
                     ChessPiece pieceAtNew = board.getPiece(newPosition);
-                    
                     if(pieceAtNew == null){
                         moves.add(new ChessMove(myPosition,newPosition));
                     }
@@ -159,17 +152,14 @@ public class ChessPiece {
                 
             }
         }
-        else if(type == PieceType.KNIGHT){
+        else if(type == PieceType.KNIGHT){ // Movement options for KNIGHT
             int[][] knightVectors = {{2,1},{1,2},{-2,1},{-1,2},{2,-1},{1,-2},{-2,-1},{-1,-2}};
             for(int i = 0; i < knightVectors.length;i++){
-
                 ChessPosition newPosition = myPosition.add(knightVectors[i]);
                 if(!newPosition.inBoard()){
                     continue;
                 }
-
                 ChessPiece pieceAtNew = board.getPiece(newPosition);
-                
                 if(pieceAtNew == null){
                     moves.add(new ChessMove(myPosition,newPosition));
                 }
@@ -183,7 +173,7 @@ public class ChessPiece {
                 }
             }
         }
-        else if(type == PieceType.PAWN){
+        else if(type == PieceType.PAWN){ // Movement options for PAWN (ignores En passant)
             int flip = 1;
             int startRow = 2;
             int promoteRow = 7;
@@ -192,11 +182,9 @@ public class ChessPiece {
                 startRow = 7;
                 promoteRow = 2;         
             }
-                
             ChessPosition forwardOnePosition = myPosition.add(new int[]{1*flip,0});
             ChessPosition leftCapturePosition = myPosition.add(new int[]{1*flip,-1});
             ChessPosition rightCapturePosition = myPosition.add(new int[]{1*flip,1});
-
             if(forwardOnePosition.inBoard() && board.getPiece(forwardOnePosition) == null){ // Normal go forward 1 move
                 if(myPosition.getRow() == promoteRow){
                     pawnPromotionMoves(moves,myPosition,forwardOnePosition);
@@ -204,14 +192,11 @@ public class ChessPiece {
                 else{
                     moves.add(new ChessMove(myPosition, forwardOnePosition));
                 }
-                
                 if(myPosition.getRow() == startRow){ // Check if you on start square
                     ChessPosition forwardTwoPosition = myPosition.add(new int[]{2*flip,0});
                     if(board.getPiece(forwardTwoPosition) == null){
                         moves.add(new ChessMove(myPosition, forwardTwoPosition));
-
                     }
-
                 }
             }
             //Checks if you can capture left or right
@@ -225,7 +210,6 @@ public class ChessPiece {
                 }  
             }
             if(rightCapturePosition.inBoard() && board.getPiece(rightCapturePosition) != null && board.getPiece(rightCapturePosition).getTeamColor() != color){
-                
                 if(myPosition.getRow() == promoteRow){
                     pawnPromotionMoves(moves,myPosition,rightCapturePosition);
                 }
@@ -242,7 +226,8 @@ public class ChessPiece {
         moves.add(new ChessMove(myPosition, newPosition,ChessPiece.PieceType.ROOK));
         moves.add(new ChessMove(myPosition, newPosition,ChessPiece.PieceType.KNIGHT));
         moves.add(new ChessMove(myPosition, newPosition,ChessPiece.PieceType.QUEEN));
-    }                                       
+    }           
+                                
     @Override
     public int hashCode() {
         final int prime = 31;
