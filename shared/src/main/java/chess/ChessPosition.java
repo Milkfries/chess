@@ -30,6 +30,20 @@ public class ChessPosition {
     public int getColumn() {
         return col;
     }
+    public ChessPosition add(int[] direction){
+        int row = this.row + direction[0];
+        int col = this.col + direction[1];
+        return new ChessPosition(row, col);
+    }
+    public ChessPosition add(int[] direction,int scale){
+        int new_row =  (this.row + scale * direction[0]);
+        int new_col =  (this.col + scale * direction[1]);
+        return new ChessPosition(new_row, new_col);
+    }
+
+    public boolean inBoard(){
+        return (row >=1 && row <=8 && col >= 1 && col <=8);    
+    }
 
     @Override
     public int hashCode() {
