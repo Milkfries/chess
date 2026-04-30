@@ -121,7 +121,7 @@ public class ChessGame {
         }
 
         if(isInCheck(teamTurn)){
-            board.addPiece(startPosition, piece);
+            board.addPiece(startPosition, board.getPiece(startPosition));
             board.addPiece(endPosition, endPiece);
             throw new InvalidMoveException("Move Puts Player in Check");
         }
@@ -210,6 +210,8 @@ public class ChessGame {
                 makeMoveOnBoard(move);
 
                 if(!isInCheck(teamColor)){
+                    board.addPiece(startPosition, startPiece);
+                    board.addPiece(endPosition, endPiece);
                     return false;
                 }
                 board.addPiece(startPosition, startPiece);
