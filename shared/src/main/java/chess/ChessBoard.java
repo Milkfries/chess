@@ -10,8 +10,12 @@ import java.util.Arrays;
  */
 public class ChessBoard {
     private ChessPiece[][] board;
+    private ChessPosition lastMovedPosition;
+    private ChessPiece lastMovedPiece;
     public ChessBoard() {
-        board = new ChessPiece[8][8];
+        this.board = new ChessPiece[8][8];
+        this.lastMovedPosition = null;
+        this.lastMovedPiece = null;
     }
 
     /**
@@ -25,6 +29,9 @@ public class ChessBoard {
         int col = position.getColumn() - 1;
 
         board[row][col] = piece;
+
+        lastMovedPosition = position;
+        lastMovedPiece = piece;
     }
 
     /**
@@ -36,6 +43,13 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return board[position.getRow()-1][position.getColumn()-1];
+    }
+
+    public ChessPosition getLastMovedPosition(){
+        return lastMovedPosition;
+    }
+    public ChessPiece getLastMovedPiece(){
+        return lastMovedPiece;
     }
 
     /**
