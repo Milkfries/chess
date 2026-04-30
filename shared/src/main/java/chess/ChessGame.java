@@ -125,7 +125,7 @@ public class ChessGame {
             board.addPiece(endPosition, endPiece);
             throw new InvalidMoveException("Move Puts Player in Check");
         }
-        
+        piece.setHasMoved();
         if(teamTurn == TeamColor.BLACK){
             setTeamTurn(TeamColor.WHITE);
         }
