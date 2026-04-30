@@ -11,15 +11,25 @@ public class ChessMove {
     private ChessPosition start;
     private ChessPosition end;
     private ChessPiece.PieceType promotionType;
+    private ChessMove otherMove;
+
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece) {
         this.start = startPosition;
         this.end = endPosition;
         this.promotionType = promotionPiece;
+        this.otherMove = null;
     }
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
         this.start = startPosition;
         this.end = endPosition;
         this.promotionType = null;
+        this.otherMove = null;
+    }
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition, ChessMove otherMove) {
+        this.start = startPosition;
+        this.end = endPosition;
+        this.promotionType = null;
+        this.otherMove = otherMove;
     }
 
     /**
@@ -35,7 +45,10 @@ public class ChessMove {
     public ChessPosition getEndPosition() {
         return end;
     }
-
+    
+    public ChessMove getOtherMove(){
+        return otherMove;
+    }
     /**
      * Gets the type of piece to promote a pawn to if pawn promotion is part of this
      * chess move
