@@ -66,65 +66,65 @@ public class ChessPiece {
         Collection<ChessMove> moves = new ArrayList<>();
         if(type == PieceType.KING){ // Movement options for KING
             int[][] kingVectors = {{1,1},{1,0},{1,-1},{0,1},{0,-1},{-1,1},{-1,0},{-1,-1}};
-            if(!hasMoved){ // Castling Logic
-                if(color == TeamColor.WHITE){ 
-                    ChessPiece leftCastle = board.getPiece(new ChessPosition(1, 1));
-                    ChessPiece rightCastle = board.getPiece(new ChessPosition(1, 8));
-                    if(leftCastle != null && leftCastle.getPieceType() == PieceType.ROOK && !leftCastle.getHasMoved()){ // White King long castle
-                        boolean spaceClear = true;
-                        for(int i = 2; i <= 4; i++){
-                            if(board.getPiece(new ChessPosition(1, i)) != null){
-                                spaceClear = false;
-                                break;
-                            }
-                        }
-                        if(spaceClear){
-                            moves.add(new ChessMove(myPosition,new ChessPosition(1, 3)));
-                        }
-                    }
-                    if(rightCastle != null && rightCastle.getPieceType() == PieceType.ROOK && !rightCastle.getHasMoved()){ // White King short castle
-                        boolean spaceClear = true;
-                        for(int i = 6; i <= 7; i++){
-                            if(board.getPiece(new ChessPosition(1, i)) != null){
-                                spaceClear = false;
-                                break;
-                            }
-                        }
-                        if(spaceClear){
-                            moves.add(new ChessMove(myPosition,new ChessPosition(1, 7)));
-                        }
-                    }
-                }
-                else{
-                    ChessPiece leftCastle = board.getPiece(new ChessPosition(8, 1));
-                    ChessPiece rightCastle = board.getPiece(new ChessPosition(8, 8));
-                    if(leftCastle != null && leftCastle.getPieceType() == PieceType.ROOK && !leftCastle.getHasMoved()){ // Black King long castle
-                        boolean spaceClear = true;
-                        for(int i = 2; i <=4; i++){
-                            if(board.getPiece(new ChessPosition(8, i)) != null){
-                                spaceClear = false;
-                                break;
-                            }
-                        }
-                        if(spaceClear){
-                            moves.add(new ChessMove(myPosition,new ChessPosition(8, 3)));
-                        }
-                    }
-                    if(rightCastle != null && rightCastle.getPieceType() == PieceType.ROOK && !rightCastle.getHasMoved()){ // Black King short castle
-                        boolean spaceClear = true;
-                        for(int i = 6; i <= 7; i++){
-                            if(board.getPiece(new ChessPosition(8, i)) != null){
-                                spaceClear = false;
-                                break;
-                            }
-                        }
-                        if(spaceClear){
-                            moves.add(new ChessMove(myPosition,new ChessPosition(8, 7)));
-                        }
-                    }
-                }
+            // if(!hasMoved){ // Castling Logic
+            //     if(color == TeamColor.WHITE){ 
+            //         ChessPiece leftCastle = board.getPiece(new ChessPosition(1, 1));
+            //         ChessPiece rightCastle = board.getPiece(new ChessPosition(1, 8));
+            //         if(leftCastle != null && leftCastle.getPieceType() == PieceType.ROOK && !leftCastle.getHasMoved()){ // White King long castle
+            //             boolean spaceClear = true;
+            //             for(int i = 2; i <= 4; i++){
+            //                 if(board.getPiece(new ChessPosition(1, i)) != null){
+            //                     spaceClear = false;
+            //                     break;
+            //                 }
+            //             }
+            //             if(spaceClear){
+            //                 moves.add(new ChessMove(myPosition,new ChessPosition(1, 3)));
+            //             }
+            //         }
+            //         if(rightCastle != null && rightCastle.getPieceType() == PieceType.ROOK && !rightCastle.getHasMoved()){ // White King short castle
+            //             boolean spaceClear = true;
+            //             for(int i = 6; i <= 7; i++){
+            //                 if(board.getPiece(new ChessPosition(1, i)) != null){
+            //                     spaceClear = false;
+            //                     break;
+            //                 }
+            //             }
+            //             if(spaceClear){
+            //                 moves.add(new ChessMove(myPosition,new ChessPosition(1, 7)));
+            //             }
+            //         }
+            //     }
+            //     else{
+            //         ChessPiece leftCastle = board.getPiece(new ChessPosition(8, 1));
+            //         ChessPiece rightCastle = board.getPiece(new ChessPosition(8, 8));
+            //         if(leftCastle != null && leftCastle.getPieceType() == PieceType.ROOK && !leftCastle.getHasMoved()){ // Black King long castle
+            //             boolean spaceClear = true;
+            //             for(int i = 2; i <=4; i++){
+            //                 if(board.getPiece(new ChessPosition(8, i)) != null){
+            //                     spaceClear = false;
+            //                     break;
+            //                 }
+            //             }
+            //             if(spaceClear){
+            //                 moves.add(new ChessMove(myPosition,new ChessPosition(8, 3)));
+            //             }
+            //         }
+            //         if(rightCastle != null && rightCastle.getPieceType() == PieceType.ROOK && !rightCastle.getHasMoved()){ // Black King short castle
+            //             boolean spaceClear = true;
+            //             for(int i = 6; i <= 7; i++){
+            //                 if(board.getPiece(new ChessPosition(8, i)) != null){
+            //                     spaceClear = false;
+            //                     break;
+            //                 }
+            //             }
+            //             if(spaceClear){
+            //                 moves.add(new ChessMove(myPosition,new ChessPosition(8, 7)));
+            //             }
+            //         }
+            //     }
                 
-            }
+            // }
             for(int i = 0; i < kingVectors.length;i++){
                 ChessPosition newPosition = myPosition.add(kingVectors[i]);
                 if(!newPosition.inBoard()){
@@ -172,69 +172,69 @@ public class ChessPiece {
         }
         else if(type == PieceType.ROOK){ // Movement options for ROOK (not castling)
             int[][] rookVectors = {{1,0},{0,1},{0,-1},{-1,0}};
-            if(!hasMoved){
-                if(color == TeamColor.WHITE){
-                    ChessPiece whiteKing = board.getPiece(new ChessPosition(1, 5));
-                    if(whiteKing != null && !whiteKing.getHasMoved()){
-                        if(myPosition == new ChessPosition(1, 1)){ // White Long Castle
-                            boolean spaceClear = true;
-                            for(int i = 2; i <= 4; i++){
-                                if(board.getPiece(new ChessPosition(1, i)) != null){
-                                    spaceClear = false;
-                                    break;
-                                }
-                            }
-                            if(spaceClear){
-                                moves.add(new ChessMove(myPosition, new ChessPosition(1,4)));
-                            }
+            // if(!hasMoved){
+            //     if(color == TeamColor.WHITE){
+            //         ChessPiece whiteKing = board.getPiece(new ChessPosition(1, 5));
+            //         if(whiteKing != null && !whiteKing.getHasMoved()){
+            //             if(myPosition == new ChessPosition(1, 1)){ // White Long Castle
+            //                 boolean spaceClear = true;
+            //                 for(int i = 2; i <= 4; i++){
+            //                     if(board.getPiece(new ChessPosition(1, i)) != null){
+            //                         spaceClear = false;
+            //                         break;
+            //                     }
+            //                 }
+            //                 if(spaceClear){
+            //                     moves.add(new ChessMove(myPosition, new ChessPosition(1,4)));
+            //                 }
                             
-                        }
-                        else{ // White Short Castle
-                            boolean spaceClear = true;
-                            for(int i = 6; i <= 7; i++){
-                                if(board.getPiece(new ChessPosition(1, i)) != null){
-                                    spaceClear = false;
-                                    break;
-                                }
-                            }
-                            if(spaceClear){
-                                moves.add(new ChessMove(myPosition, new ChessPosition(1,6)));
-                            }
+            //             }
+            //             else{ // White Short Castle
+            //                 boolean spaceClear = true;
+            //                 for(int i = 6; i <= 7; i++){
+            //                     if(board.getPiece(new ChessPosition(1, i)) != null){
+            //                         spaceClear = false;
+            //                         break;
+            //                     }
+            //                 }
+            //                 if(spaceClear){
+            //                     moves.add(new ChessMove(myPosition, new ChessPosition(1,6)));
+            //                 }
                             
-                        }
-                    }
-                }
-                else{
-                    ChessPiece blackKing = board.getPiece(new ChessPosition(8, 5));
-                    if(blackKing != null && !blackKing.getHasMoved()){
-                        if(myPosition == new ChessPosition(8, 1)){ // Black Long Castle
-                            boolean spaceClear = true;
-                            for(int i = 2; i <= 4; i++){
-                                if(board.getPiece(new ChessPosition(8, i)) != null){
-                                    spaceClear = false;
-                                    break;
-                                }
-                            }
-                            if(spaceClear){
-                                moves.add(new ChessMove(myPosition, new ChessPosition(8,4)));
-                            }
+            //             }
+            //         }
+            //     }
+            //     else{
+            //         ChessPiece blackKing = board.getPiece(new ChessPosition(8, 5));
+            //         if(blackKing != null && !blackKing.getHasMoved()){
+            //             if(myPosition == new ChessPosition(8, 1)){ // Black Long Castle
+            //                 boolean spaceClear = true;
+            //                 for(int i = 2; i <= 4; i++){
+            //                     if(board.getPiece(new ChessPosition(8, i)) != null){
+            //                         spaceClear = false;
+            //                         break;
+            //                     }
+            //                 }
+            //                 if(spaceClear){
+            //                     moves.add(new ChessMove(myPosition, new ChessPosition(8,4)));
+            //                 }
                             
-                        }
-                        else{ // Black Short Castle
-                            boolean spaceClear = true;
-                            for(int i = 6; i <= 7; i++){
-                                if(board.getPiece(new ChessPosition(8, i)) != null){
-                                    spaceClear = false;
-                                    break;
-                                }
-                            }
-                            if(spaceClear){
-                                moves.add(new ChessMove(myPosition, new ChessPosition(8,6)));
-                            }
-                        }
-                    }
-                }
-            }
+            //             }
+            //             else{ // Black Short Castle
+            //                 boolean spaceClear = true;
+            //                 for(int i = 6; i <= 7; i++){
+            //                     if(board.getPiece(new ChessPosition(8, i)) != null){
+            //                         spaceClear = false;
+            //                         break;
+            //                     }
+            //                 }
+            //                 if(spaceClear){
+            //                     moves.add(new ChessMove(myPosition, new ChessPosition(8,6)));
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
             for(int i = 0; i < rookVectors.length;i++){
                 for(int j = 1; j < 8; j++){
                     ChessPosition newPosition = myPosition.add(rookVectors[i],j);
@@ -320,18 +320,18 @@ public class ChessPiece {
             ChessPosition leftCapturePosition = myPosition.add(new int[]{1*flip,-1});
             ChessPosition rightCapturePosition = myPosition.add(new int[]{1*flip,1});
             
-            if(board.getLastMovedPiece().getPieceType() == PieceType.PAWN){
-                ChessPosition otherPawnPosition = board.getLastMovedPosition();
-                int otherRow = otherPawnPosition.getRow();
-                int myRow = myPosition.getRow();
-                int otherCol = otherPawnPosition.getColumn();
-                int myCol = myPosition.getColumn();
-                if(myRow == passantRow && otherRow == myRow){
-                    if((myCol + 1 == otherCol) || (myCol -1 == otherCol)){
-                        moves.add(new ChessMove(myPosition, otherPawnPosition));
-                    }
-                }
-            }
+            // if(board.getLastMovedPiece() != null && board.getLastMovedPiece().getPieceType() == PieceType.PAWN){
+            //     ChessPosition otherPawnPosition = board.getLastMovedPosition();
+            //     int otherRow = otherPawnPosition.getRow();
+            //     int myRow = myPosition.getRow();
+            //     int otherCol = otherPawnPosition.getColumn();
+            //     int myCol = myPosition.getColumn();
+            //     if(myRow == passantRow && otherRow == myRow){
+            //         if((myCol + 1 == otherCol) || (myCol -1 == otherCol)){
+            //             moves.add(new ChessMove(myPosition, otherPawnPosition.add(new int[]{0,flip})));
+            //         }
+            //     }
+            // }
             if(forwardOnePosition.inBoard() && board.getPiece(forwardOnePosition) == null){ // Normal go forward 1 move
                 if(myPosition.getRow() == promoteRow){
                     pawnPromotionMoves(moves,myPosition,forwardOnePosition);
