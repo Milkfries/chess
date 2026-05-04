@@ -14,8 +14,8 @@ import chess.ChessGame.TeamColor;
  * signature of the existing methods.
  */
 public class ChessPiece {
-    private ChessGame.TeamColor color;
-    private ChessPiece.PieceType type;
+    private TeamColor color;
+    private PieceType type;
     private boolean hasMoved;
     public ChessPiece(TeamColor pieceColor, PieceType type) {
         this.color = pieceColor;
@@ -38,7 +38,7 @@ public class ChessPiece {
     /**
      * @return Which team this chess piece belongs to
      */
-    public ChessGame.TeamColor getTeamColor() {
+    public TeamColor getTeamColor() {
         return color;
     }
 
@@ -309,12 +309,12 @@ public class ChessPiece {
             int flip = 1;
             int startRow = 2;
             int promoteRow = 7;
-            int passantRow = 5;
-            if(color == ChessGame.TeamColor.BLACK){ // Flips the direction if you are black
+            // int passantRow = 5
+            if(color == TeamColor.BLACK){ // Flips the direction if you are black
                 flip = -1;       
                 startRow = 7;
                 promoteRow = 2;    
-                passantRow = 4;     
+                // passantRow = 4;     
             }
             ChessPosition forwardOnePosition = myPosition.add(new int[]{1*flip,0});
             ChessPosition leftCapturePosition = myPosition.add(new int[]{1*flip,-1});
