@@ -24,10 +24,10 @@ public class UserService {
 		String email = registerRequest.email();
 
 		if(username == null || password == null || username.isBlank() || password.isBlank()){
-			throw new ServiceException("BadRequestException");
+			throw new ServiceException("Error: bad request");
 		}
 		if(userDAO.getUser(username)!= null){
-			throw new ServiceException("AlreadyTakenException");
+			throw new ServiceException("Error: already taken");
 		}
 		UserData newUser = new UserData(username, password,email);
 		userDAO.insertUser(newUser);
