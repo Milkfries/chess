@@ -17,7 +17,7 @@ public class ChessPiece {
     private ChessGame.TeamColor color;
     private ChessPiece.PieceType type;
     private boolean hasMoved;
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    public ChessPiece(TeamColor pieceColor, PieceType type) {
         this.color = pieceColor;
         this.type = type;
         hasMoved = false;
