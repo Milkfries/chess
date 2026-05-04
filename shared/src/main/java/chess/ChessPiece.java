@@ -3,7 +3,7 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.sound.midi.SysexMessage;
+// import javax.sound.midi.SysexMessage;
 
 import chess.ChessGame.TeamColor;
 
