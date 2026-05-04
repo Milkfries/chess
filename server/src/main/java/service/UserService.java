@@ -2,8 +2,6 @@ package service;
 
 import java.util.UUID;
 
-import org.eclipse.jetty.util.thread.ReservedThreadExecutor;
-
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
