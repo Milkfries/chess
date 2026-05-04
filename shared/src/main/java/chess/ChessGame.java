@@ -164,7 +164,7 @@ public class ChessGame {
         ChessPiece piece = board.getPiece(startPosition);
 
         board.addPiece(startPosition, null);
-        ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
+        PieceType promotionPiece = move.getPromotionPiece();
         if(promotionPiece == null){
             board.addPiece(endPosition, piece);
         }   
@@ -273,7 +273,7 @@ public class ChessGame {
                     if(piece == null){
                         continue;
                     }
-                    if(piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor){
+                    if(piece.getPieceType() == PieceType.KING && piece.getTeamColor() == teamColor){
                         return position;
                     }
                 }
