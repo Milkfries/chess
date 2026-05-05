@@ -74,7 +74,7 @@ public class Server {
         try{
             clearService.clear();
             ctx.status(200);
-            ctx.result(new Gson().toJson(Map.of("message", "")));
+            ctx.result("{}");
         }
         catch(Exception e){
             errorPage(ctx, 500, e);
@@ -120,7 +120,19 @@ public class Server {
         }
     }
     private void logout(Context ctx){
-
+        try{
+            String authToken = ctx.header("Authorization");
+            LogoutRequest logoutRequest = new LogoutRequest(authToken);
+            userService.logout(logoutRequest);
+            ctx.status(200);
+            ctx.result("{}");
+        }
+        catch (UnauthorizedException ue){
+            errorPage(ctx, 401, ue);
+        }
+        catch(Exception e){
+            errorPage(ctx, 500, e);
+        }
     }
     private void listGames(Context ctx){
 
