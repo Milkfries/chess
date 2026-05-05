@@ -2,6 +2,8 @@ package service;
 
 import org.junit.jupiter.api.*;
 
+import com.google.protobuf.ServiceException;
+
 import dataaccess.*;
 import request.*;
 import result.*;
@@ -39,7 +41,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Register User")
-    public void registerUser() throws DataAccessException, ServiceException{ 
+    public void registerUser() throws DataAccessException, BadRequestException, AlreadyTakenException{ 
         RegisterResult registerResult = userService.register(registerRequest1);
         Assertions.assertNotNull(registerResult);
         Assertions.assertEquals(registerRequest1.username(), registerResult.username());
@@ -49,7 +51,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Register Multiple Users")
-    public void registerMultiUser() throws DataAccessException, ServiceException{ 
+    public void registerMultiUser() throws DataAccessException, BadRequestException, AlreadyTakenException{ 
         RegisterResult registerResult1 = userService.register(registerRequest1);
         RegisterResult registerResult2 = userService.register(registerRequest2);
         Assertions.assertNotEquals(registerResult1,registerResult2);
@@ -57,16 +59,16 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("No Username")
-    public void noUsername() throws DataAccessException, ServiceException{
-        ServiceException exception = Assertions.assertThrows(ServiceException.class,()->{
+    public void noUsername() throws DataAccessException, BadRequestException, AlreadyTakenException{
+        BadRequestException exception = Assertions.assertThrows(BadRequestException.class,()->{
             userService.register(forgotUsername);
             });
         Assertions.assertEquals("Error: bad request", exception.getMessage());
     }
     @Test
     @DisplayName("No Password")
-    public void noPassword() throws DataAccessException, ServiceException{
-        ServiceException exception = Assertions.assertThrows(ServiceException.class,()->{
+    public void noPassword() throws DataAccessException, BadRequestException, AlreadyTakenException{
+        BadRequestException exception = Assertions.assertThrows(BadRequestException.class,()->{
             userService.register(forgotPassword);
             });
 
@@ -75,19 +77,19 @@ public class UserServiceTests {
     }
     @Test
     @DisplayName("No Email")
-    public void noEmail() throws DataAccessException, ServiceException{
+    public void noEmail() throws DataAccessException, BadRequestException, AlreadyTakenException{
         Assertions.assertDoesNotThrow(()->{
             userService.register(forgotEmail);
             });
     }
     @Test
     @DisplayName("Duplicate Username")
-    public void duplicateUsername() throws DataAccessException, ServiceException{
+    public void duplicateUsername() throws DataAccessException, BadRequestException, AlreadyTakenException{
         RegisterRequest duplicateRequest = new RegisterRequest(registerRequest1.username(), "saferPassword", "dontspamme@gmail.com");
 
         userService.register(registerRequest1);
 
-        ServiceException exception = Assertions.assertThrows(ServiceException.class,()->{
+        AlreadyTakenException exception = Assertions.assertThrows(AlreadyTakenException.class,()->{
             userService.register(duplicateRequest);
         });
 

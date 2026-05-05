@@ -3,6 +3,7 @@ package service;
 import java.util.UUID;
 
 import dataaccess.*;
+import io.javalin.http.BadRequestResponse;
 import model.AuthData;
 import model.UserData;
 import request.*;
@@ -16,16 +17,16 @@ public class UserService {
 		this.userDAO = userDAO;
 		this.authDAO = authDAO;
     }
-	public RegisterResult register(RegisterRequest registerRequest) throws ServiceException,DataAccessException {
+	public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException,BadRequestException,AlreadyTakenException {
 		String username = registerRequest.username();
 		String password = registerRequest.password();
 		String email = registerRequest.email();
 
 		if(username == null || password == null || username.isBlank() || password.isBlank()){
-			throw new ServiceException("Error: bad request");
+			throw new BadRequestException("Error: bad request");
 		}
 		if(userDAO.getUser(username)!= null){
-			throw new ServiceException("Error: already taken");
+			throw new AlreadyTakenException("Error: already taken");
 		}
 		UserData newUser = new UserData(username, password,email);
 		userDAO.insertUser(newUser);
