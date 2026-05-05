@@ -53,14 +53,23 @@ public class Server {
 
     public int run(int desiredPort) {
         javalin.start(desiredPort);
+        javalin.delete("/db", this::delete);
         javalin.post("/user",this::register);
+        javalin.post("/session",this::login);
+        javalin.delete("/session",this::logout);
+        javalin.get("/game",this::listGames);
+        javalin.post("/game",this::createGame);
+        javalin.put("/game",this::joinGame);
+        
         return javalin.port();
     }
 
     public void stop() {
         javalin.stop();
     }
+    private void delete(Context ctx){
 
+    }
     private void register(Context ctx){
         // var serializer = new Gson();
         try{
@@ -80,6 +89,21 @@ public class Server {
             errorPage(ctx, 500, e);
         }
         
+    }
+    private void login(Context ctx){
+
+    }
+    private void logout(Context ctx){
+
+    }
+    private void listGames(Context ctx){
+
+    }
+    private void createGame(Context ctx){
+
+    }
+    private void joinGame(Context ctx){
+
     }
 
     private void errorPage(Context ctx, int errorNumber, Exception error){
