@@ -3,7 +3,6 @@ package service;
 import java.util.UUID;
 
 import dataaccess.*;
-import io.javalin.http.BadRequestResponse;
 import model.AuthData;
 import model.UserData;
 import request.*;
