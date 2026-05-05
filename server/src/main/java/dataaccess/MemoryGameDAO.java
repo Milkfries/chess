@@ -8,15 +8,18 @@ import model.GameData;
 
 public class MemoryGameDAO implements GameDAO{
     private HashMap<Integer, GameData> games; // Key is gameID - int
-    private static int gameID;
+    private int gameID;
 
     public MemoryGameDAO(){
         games = new HashMap<>();
         gameID = 0;
     }
     @Override
-    public void insertGame(GameData gameData) throws DataAccessException {
-        games.put(++gameID,gameData);
+    public int insertGame(GameData gameData) throws DataAccessException {
+        int newGameID = ++gameID;
+        gameData = new GameData(newGameID,gameData.whiteUsername(), gameData.blackUsername(),gameData.gameName(), gameData.game());
+        games.put(newGameID,gameData);
+        return newGameID;
     }
 
     @Override
