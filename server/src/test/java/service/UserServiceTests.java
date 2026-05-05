@@ -206,6 +206,82 @@ public class UserServiceTests {
         });
     }
 
-    
+    @Test
+    @DisplayName("Logout Once")
+    public void logoutOnce() throws Exception{
+        RegisterResult registerResult1 = userService.register(registerRequest1);
+        Assertions.assertDoesNotThrow(()->{
+            userService.logout(new LogoutRequest(registerResult1.authToken()));
+        });
+        Assertions.assertNull(authDAO.getAuth(registerResult1.authToken()));  
+    }
+
+    @Test
+    @DisplayName("Logout Twice")
+    public void logoutTwice() throws Exception{
+        RegisterResult registerResult1 = userService.register(registerRequest1);
+        Assertions.assertDoesNotThrow(()->{
+            userService.logout(new LogoutRequest(registerResult1.authToken()));
+        });
+        Assertions.assertThrows(UnauthorizedException.class,()->{
+            userService.logout(new LogoutRequest(registerResult1.authToken()));
+        });
+    }
+    @Test
+    @DisplayName("Logout Random Auth")
+    public void logoutRandomAuth() throws Exception{
+        RegisterResult registerResult1 = userService.register(registerRequest1);
+        Assertions.assertDoesNotThrow(()->{
+            userService.logout(new LogoutRequest(registerResult1.authToken()));
+        });
+        Assertions.assertThrows(UnauthorizedException.class,()->{
+            userService.logout(new LogoutRequest(UserService.generateToken()));
+        });
+    }
+
+    @Test
+    @DisplayName("Login Logout Multiple Device")
+    public void loginLogoutMultipleDevices()throws Exception{
+        RegisterResult registerResult1 = userService.register(registerRequest1);
+        Assertions.assertNotNull(registerResult1);
+        
+        LoginResult loginResult1 = userService.login(loginRequest1);
+
+        Assertions.assertNotNull(loginResult1);
+        Assertions.assertDoesNotThrow(()->{
+            userService.logout(new LogoutRequest(loginResult1.authToken()));
+            userService.logout(new LogoutRequest(registerResult1.authToken()));
+        });
+
+        LoginResult loginResult2 = userService.login(loginRequest1);
+
+        Assertions.assertNotNull(loginResult2);
+        Assertions.assertDoesNotThrow(()->{
+            userService.logout(new LogoutRequest(loginResult2.authToken()));
+        });
+    }
+
+    @Test
+    @DisplayName("Login Logout Multiple Users")
+    public void loginLogoutMultipleUsers()throws Exception{
+        RegisterResult registerResult1 = userService.register(registerRequest1);
+        RegisterResult registerResult2 = userService.register(registerRequest2);
+        LoginResult loginResult1 = userService.login(loginRequest1);
+        LoginResult loginResult2 = userService.login(loginRequest2);
+
+        Assertions.assertDoesNotThrow(()->{
+            userService.logout(new LogoutRequest(loginResult1.authToken()));
+            userService.logout(new LogoutRequest(loginResult2.authToken()));
+            userService.logout(new LogoutRequest(registerResult2.authToken()));
+            userService.logout(new LogoutRequest(registerResult1.authToken()));
+        });
+
+        LoginResult loginResult3 = userService.login(loginRequest2);
+
+        Assertions.assertDoesNotThrow(()->{
+            userService.logout(new LogoutRequest(loginResult3.authToken()));
+        });
+    }
+
 }
 
