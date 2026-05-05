@@ -67,7 +67,16 @@ public class UserService {
 		
 		return new LoginResult(username, authToken);
 	}
-	public void logout(LogoutRequest logoutRequest) {
+	public void logout(LogoutRequest logoutRequest) throws DataAccessException, UnauthorizedException{
+		String authToken = logoutRequest.authToken();
+		AuthData authData = authDAO.getAuth(authToken);
+
+		if(authData == null){ // check if authToken exists in database
+			throw new UnauthorizedException("Error: unauthorized");
+		}
+		
+		// delete the auth token
+		authDAO.deleteAuth(authToken);
 	}
 
 	public static String generateToken() {
