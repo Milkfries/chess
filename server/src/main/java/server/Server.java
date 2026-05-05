@@ -4,7 +4,6 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
-import chess.ChessGame;
 import dataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
