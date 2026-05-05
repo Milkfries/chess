@@ -40,8 +40,29 @@ public class UserService {
 
 		return result;
 	}
-	public LoginResult login(LoginRequest loginRequest) {
-		return null;
+	public LoginResult login(LoginRequest loginRequest) throws DataAccessException, BadRequestException, UnauthorizedException {
+		String username = loginRequest.username();
+		String password = loginRequest.password();
+		UserData userData = userDAO.getUser(username);
+		if(username == null || password == null || username.isBlank() || password.isBlank()){
+			throw new BadRequestException("Error: bad request");
+		}
+		if(userData == null){ // checks for invalid username
+			throw new UnauthorizedException("Error: unauthorized");
+		}
+
+		if(userData.password() != password){ // checks for wrong password
+			throw new UnauthorizedException("Error: unauthorized");
+		}
+
+		String authToken = generateToken();
+
+		AuthData authData = new AuthData(authToken, username);
+
+		authDAO.insertAuth(authData);
+
+		
+		return new LoginResult(username, authToken);
 	}
 	public void logout(LogoutRequest logoutRequest) {
 	}
