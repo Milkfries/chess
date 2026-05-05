@@ -4,15 +4,13 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
-import dataaccess.*;
+
 import io.javalin.*;
 import io.javalin.http.Context;
 import request.*;
 import result.*;
-import service.AlreadyTakenException;
-import service.BadRequestException;
-import service.UnauthorizedException;
-import service.UserService;
+import service.*;
+import dataaccess.*;
 
 public class Server {
 
@@ -21,10 +19,12 @@ public class Server {
     //databases
     private final AuthDAO authDAO;
     private final UserDAO userDAO;
-    // private final GameDOA gameDAO;
+    private final GameDAO gameDAO;
 
     //services
     private final UserService userService;
+    // private final GameService gameService;
+    private final ClearService clearService;
 
 
     public Server() {
@@ -45,9 +45,12 @@ public class Server {
         //initialize database
         authDAO = new MemoryAuthDAO();
         userDAO = new MemoryUserDAO();
+        gameDAO = new MemoryGameDAO();
 
         //initialize services
         userService = new UserService(userDAO, authDAO);
+        // gameService = new GameService();
+        clearService = new ClearService(userDAO, authDAO, gameDAO);
         
     }
 
@@ -68,7 +71,15 @@ public class Server {
         javalin.stop();
     }
     private void delete(Context ctx){
-
+        try{
+            clearService.clear();
+            ctx.status(200);
+            ctx.result(new Gson().toJson(Map.of("message", "")));
+        }
+        catch(Exception e){
+            errorPage(ctx, 500, e);
+        }
+        
     }
     private void register(Context ctx){
         // var serializer = new Gson();
