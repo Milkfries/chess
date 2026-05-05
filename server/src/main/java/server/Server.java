@@ -7,10 +7,11 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
-import request.RegisterRequest;
-import result.RegisterResult;
+import request.*;
+import result.*;
 import service.AlreadyTakenException;
 import service.BadRequestException;
+import service.UnauthorizedException;
 import service.UserService;
 
 public class Server {
@@ -90,7 +91,22 @@ public class Server {
         
     }
     private void login(Context ctx){
+        try{
+            LoginRequest loginRequest = serializer.fromJson(ctx.body(), LoginRequest.class);
+            LoginResult loginResult = userService.login(loginRequest);
 
+            ctx.status(200);
+            ctx.result(new Gson().toJson(loginResult));
+        }
+        catch (BadRequestException bre){
+            errorPage(ctx, 400, bre);
+        }
+        catch (UnauthorizedException ue){
+            errorPage(ctx, 401, ue);
+        }
+        catch (Exception e){
+            errorPage(ctx, 500, e);
+        }
     }
     private void logout(Context ctx){
 
