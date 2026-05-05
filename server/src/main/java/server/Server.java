@@ -23,7 +23,7 @@ public class Server {
 
     //services
     private final UserService userService;
-    // private final GameService gameService;
+    private final GameService gameService;
     private final ClearService clearService;
 
 
@@ -49,7 +49,7 @@ public class Server {
 
         //initialize services
         userService = new UserService(userDAO, authDAO);
-        // gameService = new GameService();
+        gameService = new GameService(authDAO, gameDAO);
         clearService = new ClearService(userDAO, authDAO, gameDAO);
         
     }
@@ -82,13 +82,12 @@ public class Server {
         
     }
     private void register(Context ctx){
-        // var serializer = new Gson();
         try{
             RegisterRequest registerRequest = serializer.fromJson(ctx.body(), RegisterRequest.class);
             RegisterResult registerResult = userService.register(registerRequest);
 
             ctx.status(200);
-            ctx.result(new Gson().toJson(registerResult));
+            ctx.result(serializer.toJson(registerResult));
         }
         catch(BadRequestException dre){
             errorPage(ctx, 400, dre);
@@ -107,7 +106,7 @@ public class Server {
             LoginResult loginResult = userService.login(loginRequest);
 
             ctx.status(200);
-            ctx.result(new Gson().toJson(loginResult));
+            ctx.result(serializer.toJson(loginResult));
         }
         catch (BadRequestException bre){
             errorPage(ctx, 400, bre);
@@ -135,13 +134,58 @@ public class Server {
         }
     }
     private void listGames(Context ctx){
+        try{
+            ListGameRequest listGameRequest = serializer.fromJson(ctx.body(), ListGameRequest.class);
+            ListGameResult listGameResult = gameService.listGames(listGameRequest);
 
+            ctx.status(200);
+            ctx.result(serializer.toJson(listGameResult));
+        }
+        catch(UnauthorizedException ue){
+            errorPage(ctx, 401, ue);
+        }
+        catch(Exception e){
+            errorPage(ctx, 500, e);
+        }
     }
     private void createGame(Context ctx){
+        try{
+            CreateGameRequest createGameRequest = serializer.fromJson(ctx.body(),CreateGameRequest.class);
+            CreateGameResult createGameResult = gameService.createGame(createGameRequest);
 
+            ctx.status(200);
+            ctx.result(serializer.toJson(createGameResult));
+        }
+        catch(BadRequestException bre){
+            errorPage(ctx, 400, bre);
+        }
+        catch(UnauthorizedException ue){
+            errorPage(ctx, 401, ue);
+        }
+        catch(Exception e){
+            errorPage(ctx, 500, e);
+        }
     }
     private void joinGame(Context ctx){
+        try{
+            JoinGameRequest joinGameRequest = serializer.fromJson(ctx.body(),JoinGameRequest.class);
+            gameService.joinGame(joinGameRequest);
 
+            ctx.status(200);
+            ctx.result("{}");
+        }
+        catch(BadRequestException bre){
+            errorPage(ctx, 400, bre);
+        }
+        catch(UnauthorizedException ue){
+            errorPage(ctx, 401, ue);
+        }
+        catch(AlreadyTakenException ate){
+            errorPage(ctx, 403, ate);
+        }
+        catch(Exception e){
+            errorPage(ctx, 500, e);
+        }
     }
 
     private void errorPage(Context ctx, int errorNumber, Exception error){
