@@ -52,7 +52,7 @@ public class GameService {
     }
     public void joinGame(JoinGameRequest request) throws UnauthorizedException, BadRequestException, AlreadyTakenException, DataAccessException{
         String authToken = request.authToken();
-        String teamColor = request.teamColor();
+        String teamColor = request.playerColor();
         int gameID = request.gameID();
 
 
@@ -62,7 +62,11 @@ public class GameService {
             throw new UnauthorizedException("Error: unauthorized");
         }
 
-        if(teamColor == null || teamColor.isBlank() || gameID == 0 ){
+        if(teamColor == null || teamColor.isBlank() || gameID == 0){
+            System.out.println("This one");
+            System.out.println(teamColor);
+            System.out.println(authToken);
+            System.out.println(gameID);
             throw new BadRequestException("Error: bad request");
         }
 
@@ -71,8 +75,8 @@ public class GameService {
         String blackUsername = currentGame.blackUsername();
         String gameName = currentGame.gameName();
         ChessGame chessGame = currentGame.game();
-
-        if(teamColor.toUpperCase() == "WHITE"){
+        System.out.println(teamColor);
+        if(teamColor.toUpperCase().equals("WHITE")){
             if(whiteUsername == null){
                 whiteUsername = authData.username();
             }
@@ -81,7 +85,7 @@ public class GameService {
             }
             
         }
-        else if(teamColor.toUpperCase() == "BLACK"){
+        else if(teamColor.toUpperCase().equals("BLACK")){
             if(blackUsername == null){
                 blackUsername = authData.username();
             }
