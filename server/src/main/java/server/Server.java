@@ -173,7 +173,7 @@ public class Server {
         try{
             String authToken = ctx.header("Authorization");
             JoinGameRequest temp_joinGameRequest = serializer.fromJson(ctx.body(),JoinGameRequest.class);
-            JoinGameRequest joinGameRequest = new JoinGameRequest(authToken,temp_joinGameRequest.teamColor(),temp_joinGameRequest.gameID());
+            JoinGameRequest joinGameRequest = new JoinGameRequest(authToken,temp_joinGameRequest.playerColor(),temp_joinGameRequest.gameID());
             gameService.joinGame(joinGameRequest);
 
             ctx.status(200);
