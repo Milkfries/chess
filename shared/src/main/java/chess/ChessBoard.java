@@ -10,9 +10,11 @@ import java.util.Arrays;
  */
 public class ChessBoard {
     private ChessPiece[][] board;
+    private ChessMove lastMove;
 
     public ChessBoard() {
         this.board = new ChessPiece[8][8];
+        this.lastMove = null;
     }
 
     /**
@@ -28,7 +30,12 @@ public class ChessBoard {
         board[row][col] = piece;
 
     }
-
+    public void setLastMove(ChessMove move){
+        this.lastMove = move;
+    }
+    public ChessMove getLastMove(){
+        return lastMove;
+    }
     /**
      * Gets a chess piece on the chessboard
      *
