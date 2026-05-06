@@ -40,7 +40,12 @@ public class ChessPosition {
         int new_col =  (this.col + scale * direction[1]);
         return new ChessPosition(new_row, new_col);
     }
-
+    public int[] difference(ChessPosition other){
+        int rowDiff = other.getRow()-this.getRow();
+        int colDiff = other.getColumn()-this.getColumn();
+        return new int[]{rowDiff,colDiff};
+        
+    }
     public boolean inBoard(){
         return (row >=1 && row <=8 && col >= 1 && col <=8);    
     }
