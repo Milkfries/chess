@@ -1,5 +1,5 @@
 package request;
 
-public record JoinGameRequest(String authToken, String teamColor, int gameID) {
+public record JoinGameRequest(String authToken, String playerColor, int gameID) {
     
 }
