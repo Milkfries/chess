@@ -320,18 +320,6 @@ public class ChessPiece {
             ChessPosition leftCapturePosition = myPosition.add(new int[]{1*flip,-1});
             ChessPosition rightCapturePosition = myPosition.add(new int[]{1*flip,1});
             
-            if(board.getLastMovedPiece() != null && board.getLastMovedPiece().getPieceType() == PieceType.PAWN){
-                ChessPosition otherPawnPosition = board.getLastMovedPosition();
-                int otherRow = otherPawnPosition.getRow();
-                int myRow = myPosition.getRow();
-                int otherCol = otherPawnPosition.getColumn();
-                int myCol = myPosition.getColumn();
-                if(myRow == passantRow && otherRow == myRow){
-                    if((myCol + 1 == otherCol) || (myCol -1 == otherCol)){
-                        moves.add(new ChessMove(myPosition, otherPawnPosition.add(new int[]{0,flip})));
-                    }
-                }
-            }
             if(forwardOnePosition.inBoard() && board.getPiece(forwardOnePosition) == null){ // Normal go forward 1 move
                 if(myPosition.getRow() == promoteRow){
                     pawnPromotionMoves(moves,myPosition,forwardOnePosition);
@@ -346,25 +334,52 @@ public class ChessPiece {
                     }
                 }
             }
-            //Checks if you can capture left or right
 
-            if(leftCapturePosition.inBoard() && board.getPiece(leftCapturePosition) != null && board.getPiece(leftCapturePosition).getTeamColor() != color){
-                if(myPosition.getRow() == promoteRow){
-                    pawnPromotionMoves(moves,myPosition,leftCapturePosition);
+            ChessPosition leftPassant = myPosition.add(new int[]{0,-1});
+            ChessPosition rightPassant = myPosition.add(new int[]{0,1});
+
+            //Checks if you can move diagonal left or right (capture or no)
+            if(leftCapturePosition.inBoard()){
+                if(board.getPiece(leftCapturePosition) != null){
+                    if(board.getPiece(leftCapturePosition).getTeamColor() != color){
+                        if(myPosition.getRow() == promoteRow){
+                            pawnPromotionMoves(moves,myPosition,leftCapturePosition);
+                        }
+                        else{
+                            moves.add(new ChessMove(myPosition, leftCapturePosition));
+                        }  
+                    }
                 }
-                else{
-                    moves.add(new ChessMove(myPosition, leftCapturePosition));
-                }  
+                else if(board.getPiece(leftCapturePosition) == null){
+                    ChessPiece leftPiece = board.getPiece(leftPassant);
+                    if(myPosition.getRow() == passantRow && leftPiece!=null && leftPiece.getPieceType() == PieceType.PAWN){
+                        moves.add(new ChessMove(myPosition, leftCapturePosition));
+                    }
+                }
             }
-            if(rightCapturePosition.inBoard() && board.getPiece(rightCapturePosition) != null && board.getPiece(rightCapturePosition).getTeamColor() != color){
-                if(myPosition.getRow() == promoteRow){
-                    pawnPromotionMoves(moves,myPosition,rightCapturePosition);
+            if(rightCapturePosition.inBoard()){
+                if(board.getPiece(rightCapturePosition) != null){
+                    if(board.getPiece(rightCapturePosition).getTeamColor() != color){
+                        if(myPosition.getRow() == promoteRow){
+                            pawnPromotionMoves(moves,myPosition,rightCapturePosition);
+                        }
+                        else{
+                            moves.add(new ChessMove(myPosition, rightCapturePosition));
+                        }  
+                    }
                 }
-                else{
-                    moves.add(new ChessMove(myPosition, rightCapturePosition));
-                }  
+                else if(board.getPiece(rightCapturePosition) == null){
+                    ChessPiece rightPiece = board.getPiece(rightPassant);
+                    if(myPosition.getRow() == passantRow && rightPiece !=null && rightPiece.getPieceType() == PieceType.PAWN){
+                        moves.add(new ChessMove(myPosition, rightCapturePosition));
+                    }
+                }    
             }
         }
+
+            // Checks if en passant MIGHT be possible left or right
+            
+            
         return moves;
     }
     
