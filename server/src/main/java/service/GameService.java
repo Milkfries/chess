@@ -64,18 +64,21 @@ public class GameService {
 
         if(teamColor == null || teamColor.isBlank() || gameID == 0){
             System.out.println("This one");
-            System.out.println(teamColor);
-            System.out.println(authToken);
-            System.out.println(gameID);
             throw new BadRequestException("Error: bad request");
         }
 
         GameData currentGame = gameDAO.getGame(gameID);
+
+        if(currentGame == null){
+            throw new BadRequestException("Error: bad request");
+
+        }
+
         String whiteUsername = currentGame.whiteUsername();
         String blackUsername = currentGame.blackUsername();
         String gameName = currentGame.gameName();
         ChessGame chessGame = currentGame.game();
-        System.out.println(teamColor);
+        
         if(teamColor.toUpperCase().equals("WHITE")){
             if(whiteUsername == null){
                 whiteUsername = authData.username();
