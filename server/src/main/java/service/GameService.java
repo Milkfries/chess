@@ -73,10 +73,21 @@ public class GameService {
         ChessGame chessGame = currentGame.game();
 
         if(teamColor.toUpperCase() == "WHITE"){
-            whiteUsername = authData.username();
+            if(whiteUsername == null){
+                whiteUsername = authData.username();
+            }
+            else{
+                throw new AlreadyTakenException("Error: already taken");
+            }
+            
         }
         else if(teamColor.toUpperCase() == "BLACK"){
-            blackUsername = authData.username();
+            if(blackUsername == null){
+                blackUsername = authData.username();
+            }
+            else{
+                throw new AlreadyTakenException("Error: already taken");
+            }
         }
         else{
             throw new BadRequestException("Error: bad request");
