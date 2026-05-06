@@ -16,9 +16,9 @@ public class ChessGame {
     private ChessBoard board;
 
     public ChessGame() {
-        teamTurn = TeamColor.WHITE;
-        board = new ChessBoard();
-        board.resetBoard();
+        this.teamTurn = TeamColor.WHITE;
+        this.board = new ChessBoard();
+        this.board.resetBoard();
     }
 
     /**
@@ -100,10 +100,8 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-
-        if(isEnPassant(move)){
-            return;
-        }
+        boolean passantFlag = isEnPassant(move);
+        
         // if(isCastling(move)){
         //     return;
         // }
@@ -121,7 +119,11 @@ public class ChessGame {
         Collection<ChessMove> moves = validMoves(startPosition);
 
         if (moves.contains(move)){
+            if(passantFlag){ // Needs to be able to undo an en Passant if it would put the board in check
+                makeMoveOnBoard(board.getLastMove()); // makes Last move (pawn pushes)                
+            }
             makeMoveOnBoard(move);
+            
         }
         else{
             throw new InvalidMoveException("Move Not Valid");
@@ -133,6 +135,7 @@ public class ChessGame {
             throw new InvalidMoveException("Move Puts Player in Check");
         }
         piece.setHasMoved();
+        board.setLastMove(move);
         if(teamTurn == TeamColor.BLACK){
             setTeamTurn(TeamColor.WHITE);
         }
@@ -140,23 +143,23 @@ public class ChessGame {
             setTeamTurn(TeamColor.BLACK);
         }
     }
-    public boolean isEnPassant(ChessMove move) throws InvalidMoveException{
+    public boolean isEnPassant(ChessMove move){
+
         ChessPosition startPosition = move.getStartPosition();
-        ChessPiece piece = board.getPiece(startPosition);
-        if(piece == null){
-            return false;
-        }
         ChessPosition endPosition = move.getEndPosition();
-        TeamColor color = piece.getTeamColor();
-        int flip = (color == TeamColor.WHITE) ? 1 : -1;
-        if(piece.getPieceType() == PieceType.PAWN && startPosition.getRow() == endPosition.getRow() && ((startPosition.getColumn()+1 == endPosition.getColumn())||(startPosition.getColumn()-1 == endPosition.getColumn()))){
-            makeMove(new ChessMove(startPosition, endPosition.add(new int[]{0,flip})));
-            board.addPiece(endPosition, null);
+        ChessPiece piece = board.getPiece(startPosition);
+
+        int[] passantDirection = startPosition.difference(endPosition); // gets the vector the piece is trying to move in
+        
+        //checks that the move is capturing diagonally and that it is moving into a square with no piece which is only possible in en passant
+        
+        if(piece != null && piece.getPieceType() == PieceType.PAWN && Math.abs(passantDirection[0]) == 1 && Math.abs(passantDirection[1]) == 1 && board.getPiece(endPosition) == null ){  
             return true;
         }
         else{
             return false;
         }
+        
     }
     public void makeMoveOnBoard(ChessMove move){
         ChessPosition startPosition = move.getStartPosition();

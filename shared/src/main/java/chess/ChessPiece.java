@@ -356,8 +356,24 @@ public class ChessPiece {
                             // Up to here it is possible to do enPassant based on board positioning
 
                             //This checks if it is still possible based on the lastMove;
-                            // ChessMove lastMove = board.getLastMove();
-                            moves.add(new ChessMove(myPosition, capturePosition));
+                            
+                            ChessMove lastMove = board.getLastMove();
+
+                            if(lastMove != null){
+
+                                ChessPosition lastStartPosition = lastMove.getStartPosition();
+                                ChessPosition lastEndPosition = lastMove.getEndPosition();
+                                ChessPiece lastPiece = board.getPiece(lastEndPosition);
+
+                                int[] passantDirection = myPosition.difference(capturePosition); // gets the vector the piece is trying to move in
+                                int[] lastDirection = lastStartPosition.difference(lastEndPosition);
+                                // all thec checks for en Passant based on last move being a pawn pushing 2 from start
+                                if(lastPiece.getPieceType() == PieceType.PAWN && myPosition.add(new int[]{0,passantDirection[1]}).equals(lastEndPosition) && Math.abs(lastDirection[0]) == 2){ 
+                                    moves.add(new ChessMove(myPosition, capturePosition));
+                                }
+                            }
+
+                            
                         }
                     }    
                 }
