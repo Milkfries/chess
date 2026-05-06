@@ -63,7 +63,6 @@ public class GameService {
         }
 
         if(teamColor == null || teamColor.isBlank() || gameID == 0){
-            System.out.println("This one");
             throw new BadRequestException("Error: bad request");
         }
 
@@ -78,7 +77,7 @@ public class GameService {
         String blackUsername = currentGame.blackUsername();
         String gameName = currentGame.gameName();
         ChessGame chessGame = currentGame.game();
-        
+
         if(teamColor.toUpperCase().equals("WHITE")){
             if(whiteUsername == null){
                 whiteUsername = authData.username();
