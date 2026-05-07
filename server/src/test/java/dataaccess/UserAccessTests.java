@@ -12,11 +12,15 @@ public class UserAccessTests {
     private static UserData testUser3;
 
     @BeforeAll
-    public static void init(){
-        userDataAccess = new MemoryUserDAO();
+    public static void init() throws DataAccessException{
+        userDataAccess = new SQLUserDAO();
         testUser1 = new UserData("Bill", "pass1234","billgates@gmail.com");
         testUser2 = new UserData("Steve", "mypassword","jobsteve@gmail.com");
         testUser3 = new UserData("Mark", "ilovemymom","markzuck@gmail.com");
+    }
+    @AfterAll
+    public static void clear() throws DataAccessException{
+        userDataAccess.clear();
     }
     @BeforeEach
     public void setup() throws DataAccessException {
@@ -68,24 +72,44 @@ public class UserAccessTests {
     public void overwriteUser() throws DataAccessException{
         userDataAccess.insertUser(testUser1);
         UserData replaceUser = new UserData(testUser1.username(), "saferPass123", "billmicrosoft@gmail.com");
-        userDataAccess.insertUser(replaceUser);
-        UserData accessUser1 = userDataAccess.getUser(testUser1.username());
-        UserData accessUser2 = userDataAccess.getUser(replaceUser.username());
-        Assertions.assertEquals(accessUser1, accessUser2);
-        Assertions.assertEquals(accessUser1, replaceUser);
+        
+        Assertions.assertThrows(DataAccessException.class,()->{
+            userDataAccess.insertUser(replaceUser);
+        });
     }
     @Test
-    @DisplayName("Case Sensativity")
+    @DisplayName("Case Sensitivity")
     public void caseSensativeUser() throws DataAccessException{
         
         UserData firstUser = new UserData(testUser1.username().toLowerCase(), "security1234", "billygoats@gmail.com");
         UserData similarUser = new UserData(testUser1.username().toUpperCase(), "saferPass123", "billmicrosoft@gmail.com");
         userDataAccess.insertUser(firstUser);
-        userDataAccess.insertUser(similarUser);
-        UserData accessUser1 = userDataAccess.getUser(firstUser.username());
-        UserData accessUser2 = userDataAccess.getUser(similarUser.username());
-        Assertions.assertNotEquals(accessUser1, accessUser2);
-        Assertions.assertEquals(accessUser1, firstUser);
-        Assertions.assertEquals(accessUser2, similarUser);
+        Assertions.assertThrows(DataAccessException.class,()->{
+            userDataAccess.insertUser(similarUser);
+        });
+    }
+    @Test
+    @DisplayName("Null Username")
+    public void nullUsername() throws DataAccessException{
+        UserData nullUser = new UserData(null, "forgot", "noname@gmail.com");
+        Assertions.assertThrows(DataAccessException.class, ()->{
+            userDataAccess.insertUser(nullUser);
+        });
+        
+    }
+    @Test
+    @DisplayName("Null Password")
+    public void nullPassword() throws DataAccessException{
+        
+        UserData nullUser = new UserData("forgotpass",null, "noname@gmail.com");
+        Assertions.assertThrows(DataAccessException.class, ()->{
+            userDataAccess.insertUser(nullUser);
+        });
+    }
+    @Test
+    @DisplayName("Null Get")
+    public void nullGetUser() throws DataAccessException{
+        
+        Assertions.assertNull(userDataAccess.getUser("Idontexist"));
     }
 }
