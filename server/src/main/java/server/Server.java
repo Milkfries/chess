@@ -45,14 +45,15 @@ public class Server {
         //initialize database
         try{
             authDAO = new SQLAuthDAO();
+            userDAO = new SQLUserDAO();
         }
         catch(Exception e){
-            authDAO = new MemoryAuthDAO();
+            // authDAO = new MemoryAuthDAO();
             System.out.println(e.getMessage());
         }
         
         
-        userDAO = new MemoryUserDAO();
+        
         gameDAO = new MemoryGameDAO();
 
         //initialize services
