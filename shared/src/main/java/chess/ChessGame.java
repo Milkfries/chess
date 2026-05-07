@@ -72,24 +72,51 @@ public class ChessGame {
             ChessPiece lastPiece = null;
             boolean passantFlag = isEnPassant(move);
 
+            ChessMove castleMove = isCastling(move);
+            boolean castleFlag = castleMove == null? false : true;
 
-            if(passantFlag){ // Needs to remove pawn in en passant or move second piece in castling
+
+            
+            
+            if(passantFlag){ // Needs to remove enemy pawn in en passant 
                 ChessPosition lastPosition = board.getLastMove().getEndPosition();
                 lastPiece = board.getPiece(lastPosition);
                 board.addPiece(lastPosition, null); 
                 
             }
-            makeMoveOnBoard(move);
-            if(!isInCheck(color)){
-                legalMoves.add(move);
+            
+
+            //TODO add ability to see if castling valid and not going through check
+            if(castleFlag){ // seperate checking for castling since it has to check if the king is in check in ANY position through the castle
+                
+                //make all the king moves
+                //check if they are in check
+                //continue if not in check
+                
+               
+               
+                makeMoveOnBoard(castleMove); //makes move to see if the board is in check
+
             }
-            if(passantFlag){ // needs to be able to undo en Passant capture
+
+
+            makeMoveOnBoard(move); // makes the move to see if it puts the board in check
+
+            if(!isInCheck(color)){
+                legalMoves.add(move); // if not in check adds move to validMoves
+                
+            }
+            
+            board.addPiece(startPosition, startPiece); // undos move to reset board
+            board.addPiece(endPosition, endPiece);
+
+            if(passantFlag){ // undo en Passant capture
                 
                 board.addPiece(board.getLastMove().getEndPosition(), lastPiece);
             }
-            board.addPiece(startPosition, startPiece);
-            board.addPiece(endPosition, endPiece);
-
+            if(castleFlag){ // undo the castle move
+                makeMoveOnBoard(new ChessMove(castleMove.getEndPosition(), castleMove.getStartPosition()));
+            }
         }
         
 
@@ -120,9 +147,6 @@ public class ChessGame {
         ChessPosition startPosition = move.getStartPosition();
         ChessPiece piece = board.getPiece(startPosition);
 
-        ChessPosition endPosition = move.getEndPosition();
-        ChessPiece endPiece = board.getPiece(endPosition);
-        ChessPiece lastPiece = null;
         if(board.getLastMove()!= null){
             board.getPiece(board.getLastMove().getEndPosition());
         }
