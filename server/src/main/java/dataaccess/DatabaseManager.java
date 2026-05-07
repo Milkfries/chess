@@ -21,10 +21,49 @@ public class DatabaseManager {
      */
     static public void createDatabase() throws DataAccessException {
         var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
+        
+        String[] createTables = {"""
+            CREATE TABLE IF NOT EXISTS gameData(
+                gameID INT NOT NULL AUTO_INCREMENT,
+                whiteUsername varchar(255),
+                blackUsername varchar(255),
+                gameName varchar(255),
+                game longtext NOT NULL,
+                PRIMARY KEY(gameID)
+            )""",
+
+
+            """
+            CREATE TABLE IF NOT EXISTS userData(
+                username varchar(255) NOT NULL,
+                password varchar(255) NOT NULL,
+                email varchar(255) NOT NULL,
+                PRIMARY KEY(username)
+            )""",
+
+            """
+            CREATE TABLE IF NOT EXISTS authData(
+                authToken varchar(255) NOT NULL,
+                username varchar(255) NOT NULL,
+                PRIMARY KEY(authToken)
+            )"""
+        };
+
         try (var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
-             var preparedStatement = conn.prepareStatement(statement)) {
+            var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
+
+            conn.setCatalog(databaseName);
+
+            for(String createTableStatement : createTables){
+                try (var preparedTableStatement = conn.prepareStatement(createTableStatement)) {
+                    preparedTableStatement.executeUpdate();
+                }
+            }
+            
+            
+        } 
+        catch (SQLException ex) {
             throw new DataAccessException("failed to create database", ex);
         }
     }
