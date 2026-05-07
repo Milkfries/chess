@@ -3,6 +3,7 @@ package service;
 import org.junit.jupiter.api.*;
 
 import dataaccess.*;
+import model.UserData;
 import request.*;
 import result.*;
 
@@ -282,6 +283,15 @@ public class UserServiceTests {
             userService.logout(new LogoutRequest(loginResult3.authToken()));
         });
     }
+    @Test
+    @DisplayName("Password Is Hashed")
+    public void passwordIsHashed() throws Exception{
+        userService.register(registerRequest1);
+        UserData retrievedUser = userDAO.getUser(registerRequest1.username());
 
+        Assertions.assertFalse(retrievedUser.password().isBlank());
+        Assertions.assertFalse(registerRequest1.password().isBlank());
+        Assertions.assertNotEquals(retrievedUser.password(), registerRequest1.password());
+    }
 }
 
