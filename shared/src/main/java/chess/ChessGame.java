@@ -68,12 +68,25 @@ public class ChessGame {
         for(ChessMove move : possibleMoves){
             ChessPosition endPosition = move.getEndPosition();
             ChessPiece endPiece = board.getPiece(endPosition);
+            
+            ChessPiece lastPiece = null;
+            boolean passantFlag = isEnPassant(move);
 
+
+            if(passantFlag){ // Needs to remove pawn in en passant or move second piece in castling
+                ChessPosition lastPosition = board.getLastMove().getEndPosition();
+                lastPiece = board.getPiece(lastPosition);
+                board.addPiece(lastPosition, null); 
+                
+            }
             makeMoveOnBoard(move);
             if(!isInCheck(color)){
                 legalMoves.add(move);
             }
-
+            if(passantFlag){ // needs to be able to undo en Passant capture
+                
+                board.addPiece(board.getLastMove().getEndPosition(), lastPiece);
+            }
             board.addPiece(startPosition, startPiece);
             board.addPiece(endPosition, endPiece);
 
@@ -101,15 +114,19 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         boolean passantFlag = isEnPassant(move);
+        ChessMove castleMove = isCastling(move);
+        boolean castleFlag = castleMove == null? false : true;
         
-        // if(isCastling(move)){
-        //     return;
-        // }
         ChessPosition startPosition = move.getStartPosition();
         ChessPiece piece = board.getPiece(startPosition);
 
         ChessPosition endPosition = move.getEndPosition();
         ChessPiece endPiece = board.getPiece(endPosition);
+        ChessPiece lastPiece = null;
+        if(board.getLastMove()!= null){
+            board.getPiece(board.getLastMove().getEndPosition());
+        }
+        
 
         if(isInCheckmate(teamTurn)){
             throw new InvalidMoveException("Cannot Move - Game Over");
@@ -119,8 +136,11 @@ public class ChessGame {
         Collection<ChessMove> moves = validMoves(startPosition);
 
         if (moves.contains(move)){
-            if(passantFlag){ // Needs to be able to undo an en Passant if it would put the board in check
-                makeMoveOnBoard(board.getLastMove()); // makes Last move (pawn pushes)                
+            if(passantFlag){ // Needs to remove pawn in en passant or move second piece in castling
+                board.addPiece(board.getLastMove().getEndPosition(), null); 
+            }
+            if(castleFlag){
+                makeMoveOnBoard(castleMove);
             }
             makeMoveOnBoard(move);
             
@@ -129,11 +149,6 @@ public class ChessGame {
             throw new InvalidMoveException("Move Not Valid");
         }
 
-        if(isInCheck(teamTurn)){
-            board.addPiece(startPosition, board.getPiece(startPosition));
-            board.addPiece(endPosition, endPiece);
-            throw new InvalidMoveException("Move Puts Player in Check");
-        }
         piece.setHasMoved();
         board.setLastMove(move);
         if(teamTurn == TeamColor.BLACK){
@@ -143,7 +158,22 @@ public class ChessGame {
             setTeamTurn(TeamColor.BLACK);
         }
     }
-    public boolean isEnPassant(ChessMove move){
+    private ChessMove isCastling(ChessMove move) {
+        
+        // ChessPosition startPosition = move.getStartPosition();
+        // ChessPosition endPosition = move.getEndPosition();
+        // ChessPiece piece = board.getPiece(startPosition);
+
+        // if(piece.getPieceType() == PieceType.ROOK){
+
+        // }
+        // else if(piece.getPieceType() == PieceType.KING){
+            
+        // }
+        
+        return null;
+    }
+    private boolean isEnPassant(ChessMove move){
 
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();

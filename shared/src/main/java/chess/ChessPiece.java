@@ -170,7 +170,7 @@ public class ChessPiece {
                 
             }
         }
-        else if(type == PieceType.ROOK){ // Movement options for ROOK (not castling)
+        else if(type == PieceType.ROOK){ // Movement options for ROOK 
             int[][] rookVectors = {{1,0},{0,1},{0,-1},{-1,0}};
             if(!hasMoved){
                 if(color == TeamColor.WHITE){
