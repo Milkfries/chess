@@ -17,9 +17,9 @@ public class Server {
     private final Javalin javalin;
     private final Gson serializer;
     //databases
-    private final AuthDAO authDAO;
-    private final UserDAO userDAO;
-    private final GameDAO gameDAO;
+    private AuthDAO authDAO;
+    private UserDAO userDAO;
+    private GameDAO gameDAO;
 
     //services
     private final UserService userService;
@@ -44,14 +44,14 @@ public class Server {
 
         //initialize database
         try{
-            DatabaseManager.createDatabase();
+            authDAO = new SQLAuthDAO();
         }
         catch(Exception e){
+            authDAO = new MemoryAuthDAO();
             System.out.println(e.getMessage());
         }
         
-
-        authDAO = new SQLAuthDAO();
+        
         userDAO = new MemoryUserDAO();
         gameDAO = new MemoryGameDAO();
 
