@@ -22,10 +22,10 @@ import request.*;
         private static RegisterResult existingUser2;
 
         @BeforeAll
-        public static void init(){
-            userDAO = new MemoryUserDAO();
-            authDAO = new MemoryAuthDAO();
-            gameDAO = new MemoryGameDAO();
+        public static void init() throws DataAccessException{
+            userDAO = new SQLUserDAO();
+            authDAO = new SQLAuthDAO();
+            gameDAO = new SQLGameDAO();
             gameService = new GameService(authDAO, gameDAO);
             userService = new UserService(userDAO, authDAO);
             clearService = new ClearService(userDAO, authDAO, gameDAO);

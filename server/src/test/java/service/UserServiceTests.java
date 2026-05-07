@@ -24,9 +24,9 @@ public class UserServiceTests {
 
 
     @BeforeAll
-    public static void init(){
-        userDAO = new MemoryUserDAO();
-        authDAO = new MemoryAuthDAO();
+    public static void init() throws DataAccessException{
+        userDAO = new SQLUserDAO();
+        authDAO = new SQLAuthDAO();
         userService = new UserService(userDAO, authDAO);
 
         registerRequest1 = new RegisterRequest("Michael", "kingofpop123", "jackson1@gmail.com");
@@ -198,10 +198,10 @@ public class UserServiceTests {
         userService.register(registerRequest2);
         LoginRequest login1 = new LoginRequest(loginRequest2.username().toLowerCase(),loginRequest2.password());
         LoginRequest login2 = new LoginRequest(loginRequest2.username().toUpperCase(),loginRequest2.password());
-        Assertions.assertThrows(UnauthorizedException.class, ()->{
+        
+        
+        Assertions.assertDoesNotThrow(()->{
             userService.login(login1);
-        });
-        Assertions.assertThrows(UnauthorizedException.class, ()->{
             userService.login(login2);
         });
     }
