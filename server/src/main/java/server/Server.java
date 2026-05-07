@@ -27,7 +27,7 @@ public class Server {
     private final ClearService clearService;
 
 
-    public Server() {
+    public Server(){
 
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
@@ -43,6 +43,14 @@ public class Server {
         // game = serializer.fromJson(json, ChessGame.class);
 
         //initialize database
+        try{
+            DatabaseManager.createDatabase();
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        
+
         authDAO = new MemoryAuthDAO();
         userDAO = new MemoryUserDAO();
         gameDAO = new MemoryGameDAO();
