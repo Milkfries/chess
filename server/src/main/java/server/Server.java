@@ -51,7 +51,7 @@ public class Server {
         }
         
 
-        authDAO = new MemoryAuthDAO();
+        authDAO = new SQLAuthDAO();
         userDAO = new MemoryUserDAO();
         gameDAO = new MemoryGameDAO();
 
