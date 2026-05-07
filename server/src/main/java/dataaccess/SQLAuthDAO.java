@@ -5,7 +5,9 @@ import java.sql.ResultSet;
 import model.AuthData;
 
 public class SQLAuthDAO implements AuthDAO {
-
+    public SQLAuthDAO() throws DataAccessException{
+        DatabaseManager.createDatabase();
+    }
     @Override
     public void insertAuth(AuthData authData) throws DataAccessException {
         try(var conn = DatabaseManager.getConnection()){
@@ -28,7 +30,7 @@ public class SQLAuthDAO implements AuthDAO {
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
         try(var conn = DatabaseManager.getConnection()){
-            var statement = "SELECT authData, username FROM authData WHERE authData = ?";
+            var statement = "SELECT authToken, username FROM authData WHERE authToken = ?";
             try(var preparedStatement = conn.prepareStatement(statement)){
                 preparedStatement.setString(1,authToken);
                 ResultSet rs = preparedStatement.executeQuery();
