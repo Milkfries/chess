@@ -46,6 +46,7 @@ public class Server {
         try{
             authDAO = new SQLAuthDAO();
             userDAO = new SQLUserDAO();
+            gameDAO = new SQLGameDAO();
         }
         catch(Exception e){
             // authDAO = new MemoryAuthDAO();
@@ -54,7 +55,7 @@ public class Server {
         
         
         
-        gameDAO = new MemoryGameDAO();
+        
 
         //initialize services
         userService = new UserService(userDAO, authDAO);
