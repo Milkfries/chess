@@ -23,7 +23,7 @@ public class SQLAuthDAO implements AuthDAO {
 
         }
         catch (Exception e){
-            throw new DataAccessException("Failed to insert authData");
+            throw new DataAccessException("error: failed to insert authData");
         }
     }
 
@@ -43,7 +43,7 @@ public class SQLAuthDAO implements AuthDAO {
             
         }
         catch(Exception e){
-            throw new DataAccessException("Failed to get authData");
+            throw new DataAccessException("error: failed to get authData");
         }
         return null;
     }
@@ -60,7 +60,7 @@ public class SQLAuthDAO implements AuthDAO {
 
         }
         catch (Exception e){
-            throw new DataAccessException("Failed to delete authData");
+            throw new DataAccessException("error: failed to delete authData");
         }
     }
 
@@ -75,7 +75,7 @@ public class SQLAuthDAO implements AuthDAO {
 
         }
         catch (Exception e){
-            throw new DataAccessException("Failed to delete authData");
+            throw new DataAccessException("error: failed to clear authData");
         }
     }
     

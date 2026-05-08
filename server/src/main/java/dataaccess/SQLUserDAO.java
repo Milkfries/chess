@@ -28,7 +28,7 @@ public class SQLUserDAO implements UserDAO{
 
         }
         catch (Exception e){
-            throw new DataAccessException("Failed to insert userData");
+            throw new DataAccessException("error: failed to insert userData");
         }
     }
 
@@ -49,7 +49,7 @@ public class SQLUserDAO implements UserDAO{
             
         }
         catch(Exception e){
-            throw new DataAccessException("Failed to get userData");
+            throw new DataAccessException("error: failed to get userData");
         }
         return null;
     }
@@ -65,7 +65,7 @@ public class SQLUserDAO implements UserDAO{
 
         }
         catch (Exception e){
-            throw new DataAccessException("Failed to delete userData");
+            throw new DataAccessException("error: failed to delete userData");
         }
     }
 
