@@ -58,7 +58,7 @@ public class ServerFacade {
             HttpRequest request = builder.build();
             HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString()); //IOException, and InterruptedException 
             if(httpResponse.statusCode() != 200){
-                throw new ServerException(httpResponse.body());
+                throw new Exception(httpResponse.body());
             }
             RegisterResult result = serializer.fromJson(httpResponse.body(), RegisterResult.class);
             return result;
@@ -90,7 +90,7 @@ public class ServerFacade {
             HttpRequest request = builder.build();
             HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString()); //IOException, and InterruptedException 
             if(httpResponse.statusCode() != 200){
-                throw new ServerException(httpResponse.body());
+                throw new Exception(httpResponse.body());
             }
             LoginResult result = serializer.fromJson(httpResponse.body(), LoginResult.class);
             return result;
@@ -118,14 +118,16 @@ public class ServerFacade {
             HttpRequest request = builder.build();
             HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString()); //IOException, and InterruptedException 
             if(httpResponse.statusCode() != 200){
-                throw new ServerException(httpResponse.body());
+                throw new Exception(httpResponse.body());
             }
         }
-        catch(ServerException se){
-            throw new Exception(se.getMessage());
-        }
         catch(Exception e){
-
+            if(e.getMessage().contains("Error: ")){
+                throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
+            }
+            else{
+                throw new Exception("An error occured, please try again");
+            }
         }
     }
 }
