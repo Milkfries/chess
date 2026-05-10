@@ -47,16 +47,11 @@ public class ServerFacade {
     // }
     public RegisterResult register(RegisterRequest registerRequest) throws Exception{
         try{
-            // to login - POST /user requires username, password, email
-            String bodyJSON = serializer.toJson(registerRequest);
-            String url = fullUrl(host, port, "/user");
-            HttpRequest.Builder builder = HttpRequest.newBuilder();
-            builder.uri(new URI(url)); //URISyntaxExceptionJava
-            // request.timeout(java.time.Duration.ofMillis(5000)) Do I want this?
-            builder.POST(BodyPublishers.ofString(bodyJSON));
+            // to login - POST /user requires username, password, email (RegisterRequest)
 
-            HttpRequest request = builder.build();
-            HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString()); //IOException, and InterruptedException 
+            String bodyJSON = serializer.toJson(registerRequest);
+            
+            var httpResponse = sendHTTPRequest("POST","/user",null,bodyJSON);
             if(httpResponse.statusCode() != 200){
                 throw new Exception(httpResponse.body());
             }
@@ -79,16 +74,12 @@ public class ServerFacade {
         */
 
         try{
-            // to login - POST /user requires username, password, email
-            String bodyJSON = serializer.toJson(loginRequest);
-            String url = fullUrl(host, port, "/session");
-            HttpRequest.Builder builder = HttpRequest.newBuilder();
-            builder.uri(new URI(url)); //URISyntaxExceptionJava
-            // request.timeout(java.time.Duration.ofMillis(5000)) Do I want this?
-            builder.POST(BodyPublishers.ofString(bodyJSON));
+            // to login - POST /session requires username, password (LoginRequest)
 
-            HttpRequest request = builder.build();
-            HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString()); //IOException, and InterruptedException 
+            String bodyJSON = serializer.toJson(loginRequest);
+
+            var httpResponse = sendHTTPRequest("POST","/session",null,bodyJSON);
+
             if(httpResponse.statusCode() != 200){
                 throw new Exception(httpResponse.body());
             }
@@ -106,17 +97,15 @@ public class ServerFacade {
         }
 
     }
-    
+    public void logout(LogoutRequest logoutRequest) throws Exception{
+
+    }
     public void clear() throws Exception{
         try{
             //to clear - DELETE /db
-            String url = fullUrl(host, port, "/db");
-            HttpRequest.Builder builder = HttpRequest.newBuilder();
-            builder.uri(new URI(url)); //URISyntaxExceptionJava
-            builder.DELETE();
+            
+            var httpResponse = sendHTTPRequest("DELETE","/db",null,null);
 
-            HttpRequest request = builder.build();
-            HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString()); //IOException, and InterruptedException 
             if(httpResponse.statusCode() != 200){
                 throw new Exception(httpResponse.body());
             }
@@ -129,5 +118,35 @@ public class ServerFacade {
                 throw new Exception("An error occured, please try again");
             }
         }
+    }
+
+    public HttpResponse<String> sendHTTPRequest(String method, String path, String authToken, String bodyJSON) throws Exception{
+        String url = fullUrl(host, port, path);
+        HttpRequest.Builder builder = HttpRequest.newBuilder();
+        
+        builder.uri(new URI(url)); //URISyntaxExceptionJava
+
+        if(authToken != null){ // add authToken to header
+            builder.header("Authorization", authToken);
+        }
+        builder.timeout(java.time.Duration.ofMillis(5000)); // Do I need this?
+
+        if(method.equals("POST")){
+            builder.POST(BodyPublishers.ofString(bodyJSON));
+        }
+        if(method.equals("PUT")){
+            builder.PUT(BodyPublishers.ofString(bodyJSON));
+        }
+        if(method.equals("GET")){
+            builder.GET();
+        }
+        if(method.equals("DELETE")){
+            builder.DELETE();
+        }
+        // could add HEAD method        
+
+        HttpRequest request = builder.build();
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString()); //IOException, and InterruptedException
+        
     }
 }
