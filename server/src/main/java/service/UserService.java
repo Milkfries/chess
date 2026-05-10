@@ -1,6 +1,8 @@
 package service;
 
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -22,8 +24,11 @@ public class UserService {
 		String username = registerRequest.username();
 		String password = registerRequest.password();
 		String email = registerRequest.email();
+		Pattern pattern = Pattern.compile("\\s");
+		Matcher matcherUser = pattern.matcher(username);
+		Matcher matcherEmail = pattern.matcher(email);
 
-		if(username == null || password == null || username.isBlank() || password.isBlank()){
+		if(matcherUser.find() || matcherEmail.find() || username == null || password == null || username.isBlank() || password.isBlank()){
 			throw new BadRequestException("Error: bad request");
 		}
 		if(userDAO.getUser(username)!= null){
@@ -45,8 +50,10 @@ public class UserService {
 	public LoginResult login(LoginRequest loginRequest) throws DataAccessException, BadRequestException, UnauthorizedException {
 		String username = loginRequest.username();
 		String password = loginRequest.password();
-		
-		if(username == null || password == null || username.isBlank() || password.isBlank()){
+		Pattern pattern = Pattern.compile("\\s");
+		Matcher matcherUser = pattern.matcher(username);
+
+		if(matcherUser.find() ||username == null || password == null || username.isBlank() || password.isBlank()){
 			throw new BadRequestException("Error: bad request");
 		}
 
