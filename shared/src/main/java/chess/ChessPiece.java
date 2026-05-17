@@ -125,50 +125,11 @@ public class ChessPiece {
                 }
                 
             }
-            for(int i = 0; i < kingVectors.length;i++){
-                ChessPosition newPosition = myPosition.add(kingVectors[i]);
-                if(!newPosition.inBoard()){
-                    continue;
-                }
-                ChessPiece pieceAtNew = board.getPiece(newPosition);
-                if(pieceAtNew == null){
-                    moves.add(new ChessMove(myPosition,newPosition));
-                }
-                else if(pieceAtNew.getTeamColor() != color){
-                    moves.add(new ChessMove(myPosition,newPosition));
-                }
-                else if(pieceAtNew.getTeamColor() == color){
-                }
-                else{
-                    throw new RuntimeException("King Move Error"); 
-                }
-            }
+            addStepMoves(moves, board, myPosition, kingVectors);
         }
         else if(type == PieceType.QUEEN){ // Movement options for QUEEN
             int[][] queenVectors = {{1,1},{1,0},{1,-1},{0,1},{0,-1},{-1,1},{-1,0},{-1,-1}};
-            for(int i = 0; i < queenVectors.length;i++){
-                for(int j = 1; j < 8; j++){
-                    ChessPosition newPosition = myPosition.add(queenVectors[i],j);
-                    if(!newPosition.inBoard()){
-                        continue;
-                    }
-                    ChessPiece pieceAtNew = board.getPiece(newPosition);
-                    if(pieceAtNew == null){
-                        moves.add(new ChessMove(myPosition,newPosition));
-                    }
-                    else if(pieceAtNew.getTeamColor() != color){
-                        moves.add(new ChessMove(myPosition,newPosition));
-                        break;
-                    }
-                    else if(pieceAtNew.getTeamColor() == color){
-                        break;
-                    }
-                    else{
-                        throw new RuntimeException("Queen Move Error"); 
-                    }
-                }
-                
-            }
+            addSlidingMoves(moves, board, myPosition, queenVectors);
         }
         else if(type == PieceType.ROOK){ // Movement options for ROOK 
             int[][] rookVectors = {{1,0},{0,1},{0,-1},{-1,0}};
@@ -235,59 +196,97 @@ public class ChessPiece {
                     }
                 }
             }
-            for(int i = 0; i < rookVectors.length;i++){
-                for(int j = 1; j < 8; j++){
-                    ChessPosition newPosition = myPosition.add(rookVectors[i],j);
-                    if(!newPosition.inBoard()){
-                        continue;
-                    }
-                    ChessPiece pieceAtNew = board.getPiece(newPosition);
-                    if(pieceAtNew == null){
-                        moves.add(new ChessMove(myPosition,newPosition));
-                    }
-                    else if(pieceAtNew.getTeamColor() != color){
-                        moves.add(new ChessMove(myPosition,newPosition));
-                        break;
-                    }
-                    else if(pieceAtNew.getTeamColor() == color){
-                        break;
-                    }
-                    else{
-                        throw new RuntimeException("Rook Move Error"); 
-                    }
-                }
-            }
+            addSlidingMoves(moves, board, myPosition, rookVectors);
         }
         else if(type == PieceType.BISHOP){ // Movement options for BISHOP
             int[][] bishopVectors = {{1,1},{-1,1},{1,-1},{-1,-1}};
-            for(int i = 0; i < bishopVectors.length;i++){
-                for(int j = 1; j < 8; j++){
-                    ChessPosition newPosition = myPosition.add(bishopVectors[i],j);
-                    if(!newPosition.inBoard()){
-                        continue;
-                    }
-                    ChessPiece pieceAtNew = board.getPiece(newPosition);
-                    if(pieceAtNew == null){
-                        moves.add(new ChessMove(myPosition,newPosition));
-                    }
-                    else if(pieceAtNew.getTeamColor() != color){
-                        moves.add(new ChessMove(myPosition,newPosition));
-                        break;
-                    }
-                    else if(pieceAtNew.getTeamColor() == color){
-                        break;
-                    }
-                    else{
-                        throw new RuntimeException("Bishop Move Error"); 
-                    }
-                }
-                
-            }
+            addSlidingMoves(moves, board, myPosition, bishopVectors);
         }
         else if(type == PieceType.KNIGHT){ // Movement options for KNIGHT
             int[][] knightVectors = {{2,1},{1,2},{-2,1},{-1,2},{2,-1},{1,-2},{-2,-1},{-1,-2}};
-            for(int i = 0; i < knightVectors.length;i++){
-                ChessPosition newPosition = myPosition.add(knightVectors[i]);
+            addStepMoves(moves, board, myPosition, knightVectors);
+        }
+        else if(type == PieceType.PAWN){ // Movement options for PAWN (ignores En passant)
+            addPawnMoves(moves, board, myPosition);
+        }
+            // Checks if en passant MIGHT be possible left or right
+            
+            
+        return moves;
+    }
+    // moves only for Pawns
+    public void addPawnMoves(Collection<ChessMove> moves, ChessBoard board, ChessPosition myPosition){
+        int flip = 1;
+        int startRow = 2;
+        int promoteRow = 7;
+        int passantRow = 5;
+        if(color == TeamColor.BLACK){ // Flips the direction if you are black
+            flip = -1;       
+            startRow = 7;
+            promoteRow = 2;    
+            passantRow = 4;     
+        }
+        ChessPosition forwardOnePosition = myPosition.add(new int[]{1*flip,0});
+        if(forwardOnePosition.inBoard() && board.getPiece(forwardOnePosition) == null){ // Normal go forward 1 move
+            if(myPosition.getRow() == promoteRow){
+                pawnPromotionMoves(moves,myPosition,forwardOnePosition);
+            }
+            else{
+                moves.add(new ChessMove(myPosition, forwardOnePosition));
+            }
+            if(myPosition.getRow() == startRow){ // Check if you on start square
+                ChessPosition forwardTwoPosition = myPosition.add(new int[]{2*flip,0});
+                if(board.getPiece(forwardTwoPosition) == null){
+                    moves.add(new ChessMove(myPosition, forwardTwoPosition));
+                }
+            }
+        }
+        ChessPosition[] listDiagonalPositions = {myPosition.add(new int[]{1*flip,-1}),  myPosition.add(new int[]{1*flip,1})};
+        for(ChessPosition capturePosition: listDiagonalPositions){
+            ChessPosition passantPosition = new ChessPosition(myPosition.getRow(),capturePosition.getColumn());
+            if(capturePosition.inBoard()){
+                if(board.getPiece(capturePosition) != null){
+                    if(board.getPiece(capturePosition).getTeamColor() != color){
+                        if(myPosition.getRow() == promoteRow){
+                            pawnPromotionMoves(moves,myPosition,capturePosition);
+                        }
+                        else{
+                            moves.add(new ChessMove(myPosition, capturePosition));
+                        }  
+                    }
+                }
+                else if(board.getPiece(capturePosition) == null){
+                    ChessPiece rightPiece = board.getPiece(passantPosition);
+                    if(myPosition.getRow() == passantRow && rightPiece !=null && rightPiece.getPieceType() == PieceType.PAWN){
+                        // Up to here it is possible to do enPassant based on board positioning
+
+                        //This checks if it is still possible based on the lastMove;
+                        
+                        ChessMove lastMove = board.getLastMove();
+
+                        if(lastMove != null){
+
+                            ChessPosition lastStartPosition = lastMove.getStartPosition();
+                            ChessPosition lastEndPosition = lastMove.getEndPosition();
+                            ChessPiece lastPiece = board.getPiece(lastEndPosition);
+
+                            int[] passantDirection = myPosition.difference(capturePosition); // gets the vector the piece is trying to move in
+                            int[] lastDirection = lastStartPosition.difference(lastEndPosition);
+                            // all thec checks for en Passant based on last move being a pawn pushing 2 from start
+                            if(lastPiece.getPieceType() == PieceType.PAWN && myPosition.add(new int[]{0,passantDirection[1]}).equals(lastEndPosition) && Math.abs(lastDirection[0]) == 2){ 
+                                moves.add(new ChessMove(myPosition, capturePosition));
+                            }
+                        }
+                    }
+                }    
+            }
+        }
+    }
+
+    //moves only for pieces that move once in a direction (king, knigh)
+    public void addStepMoves(Collection<ChessMove> moves, ChessBoard board, ChessPosition myPosition, int[][] moveVectors){
+        for(int i = 0; i < moveVectors.length;i++){
+                ChessPosition newPosition = myPosition.add(moveVectors[i]);
                 if(!newPosition.inBoard()){
                     continue;
                 }
@@ -301,90 +300,37 @@ public class ChessPiece {
                 else if(pieceAtNew.getTeamColor() == color){
                 }
                 else{
-                    throw new RuntimeException("Knight Move Error"); 
+                    throw new RuntimeException("King Move Error"); 
                 }
             }
-        }
-        else if(type == PieceType.PAWN){ // Movement options for PAWN (ignores En passant)
-            int flip = 1;
-            int startRow = 2;
-            int promoteRow = 7;
-            int passantRow = 5;
-            if(color == TeamColor.BLACK){ // Flips the direction if you are black
-                flip = -1;       
-                startRow = 7;
-                promoteRow = 2;    
-                passantRow = 4;     
-            }
-            ChessPosition forwardOnePosition = myPosition.add(new int[]{1*flip,0});
-            
+    }
 
-            if(forwardOnePosition.inBoard() && board.getPiece(forwardOnePosition) == null){ // Normal go forward 1 move
-                if(myPosition.getRow() == promoteRow){
-                    pawnPromotionMoves(moves,myPosition,forwardOnePosition);
+    // moves only for pieces that slide in a direction (queen, rook, bishop)
+    public void addSlidingMoves(Collection<ChessMove> moves, ChessBoard board, ChessPosition myPosition, int[][] moveVectors){
+        for(int i = 0; i < moveVectors.length;i++){
+            for(int j = 1; j < 8; j++){
+                ChessPosition newPosition = myPosition.add(moveVectors[i],j);
+                if(!newPosition.inBoard()){
+                    continue;
+                }
+                ChessPiece pieceAtNew = board.getPiece(newPosition);
+                if(pieceAtNew == null){
+                    moves.add(new ChessMove(myPosition,newPosition));
+                }
+                else if(pieceAtNew.getTeamColor() != color){
+                    moves.add(new ChessMove(myPosition,newPosition));
+                    break;
+                }
+                else if(pieceAtNew.getTeamColor() == color){
+                    break;
                 }
                 else{
-                    moves.add(new ChessMove(myPosition, forwardOnePosition));
-                }
-                if(myPosition.getRow() == startRow){ // Check if you on start square
-                    ChessPosition forwardTwoPosition = myPosition.add(new int[]{2*flip,0});
-                    if(board.getPiece(forwardTwoPosition) == null){
-                        moves.add(new ChessMove(myPosition, forwardTwoPosition));
-                    }
+                    throw new RuntimeException("Piece Move Error"); 
                 }
             }
-
-            ChessPosition[] listDiagonalPositions = {myPosition.add(new int[]{1*flip,-1}),  myPosition.add(new int[]{1*flip,1})};
-
-            for(ChessPosition capturePosition: listDiagonalPositions){
-                ChessPosition passantPosition = new ChessPosition(myPosition.getRow(),capturePosition.getColumn());
             
-                if(capturePosition.inBoard()){
-                    if(board.getPiece(capturePosition) != null){
-                        if(board.getPiece(capturePosition).getTeamColor() != color){
-                            if(myPosition.getRow() == promoteRow){
-                                pawnPromotionMoves(moves,myPosition,capturePosition);
-                            }
-                            else{
-                                moves.add(new ChessMove(myPosition, capturePosition));
-                            }  
-                        }
-                    }
-                    else if(board.getPiece(capturePosition) == null){
-                        ChessPiece rightPiece = board.getPiece(passantPosition);
-                        if(myPosition.getRow() == passantRow && rightPiece !=null && rightPiece.getPieceType() == PieceType.PAWN){
-                            // Up to here it is possible to do enPassant based on board positioning
-
-                            //This checks if it is still possible based on the lastMove;
-                            
-                            ChessMove lastMove = board.getLastMove();
-
-                            if(lastMove != null){
-
-                                ChessPosition lastStartPosition = lastMove.getStartPosition();
-                                ChessPosition lastEndPosition = lastMove.getEndPosition();
-                                ChessPiece lastPiece = board.getPiece(lastEndPosition);
-
-                                int[] passantDirection = myPosition.difference(capturePosition); // gets the vector the piece is trying to move in
-                                int[] lastDirection = lastStartPosition.difference(lastEndPosition);
-                                // all thec checks for en Passant based on last move being a pawn pushing 2 from start
-                                if(lastPiece.getPieceType() == PieceType.PAWN && myPosition.add(new int[]{0,passantDirection[1]}).equals(lastEndPosition) && Math.abs(lastDirection[0]) == 2){ 
-                                    moves.add(new ChessMove(myPosition, capturePosition));
-                                }
-                            }
-
-                            
-                        }
-                    }    
-                }
-            }
         }
-            // Checks if en passant MIGHT be possible left or right
-            
-            
-        return moves;
     }
-    
     public void pawnPromotionMoves(Collection<ChessMove> moves, ChessPosition myPosition, ChessPosition newPosition){
         moves.add(new ChessMove(myPosition, newPosition,ChessPiece.PieceType.BISHOP));
         moves.add(new ChessMove(myPosition, newPosition,ChessPiece.PieceType.ROOK));
@@ -403,17 +349,22 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj){
             return true;
-        if (obj == null)
+        }
+        if (obj == null){
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()){
             return false;
+        }
         ChessPiece other = (ChessPiece) obj;
-        if (color != other.color)
+        if (color != other.color){
             return false;
-        if (type != other.type)
+        }
+        if (type != other.type){
             return false;
+        }
         return true;
     }
 
