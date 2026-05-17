@@ -36,9 +36,9 @@ public class ChessPosition {
         return new ChessPosition(row, col);
     }
     public ChessPosition add(int[] direction,int scale){
-        int new_row =  (this.row + scale * direction[0]);
-        int new_col =  (this.col + scale * direction[1]);
-        return new ChessPosition(new_row, new_col);
+        int newRow =  (this.row + scale * direction[0]);
+        int newCol =  (this.col + scale * direction[1]);
+        return new ChessPosition(newRow, newCol);
     }
 
     public boolean inBoard(){
@@ -56,17 +56,22 @@ public class ChessPosition {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj){
             return true;
-        if (obj == null)
+        }
+        if (obj == null){
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()){
             return false;
+        }
         ChessPosition other = (ChessPosition) obj;
-        if (row != other.row)
+        if (row != other.row){
             return false;
-        if (col != other.col)
+        }
+        if (col != other.col){
             return false;
+        }
         return true;
     }
 
