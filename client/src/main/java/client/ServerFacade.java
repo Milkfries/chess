@@ -128,6 +128,23 @@ public class ServerFacade {
             }
         }
     } 
+    public void joinGame (JoinGameRequest joinGameRequest) throws Exception{
+        try{
+            String bodyJSON = serializer.toJson(joinGameRequest);
+            var httpResponse = sendHTTPRequest("PUT", "/game", joinGameRequest.authToken(), bodyJSON);
+            if(httpResponse.statusCode() != 200){
+                throw new Exception(httpResponse.body());
+            }
+        }
+        catch (Exception e){
+            if(e.getMessage().contains("Error: ")){
+                throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
+            }
+            else{
+                throw new Exception("An error occured, please try again");
+            }
+        }
+    }
     public void clear() throws Exception{
         try{
             //to clear - DELETE /db
