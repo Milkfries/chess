@@ -3,7 +3,7 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.sound.midi.SysexMessage;
+import javax.management.RuntimeErrorException;
 
 /**
  * Represents a single chess piece
@@ -77,80 +77,15 @@ public class ChessPiece {
         }
         else if(type == PieceType.QUEEN){ // Movement options for QUEEN
             int[][] queenVectors = {{1,1},{1,0},{1,-1},{0,1},{0,-1},{-1,1},{-1,0},{-1,-1}};
-            for(int i = 0; i < queenVectors.length;i++){
-                for(int j = 1; j < 8; j++){
-                    ChessPosition newPosition = myPosition.add(queenVectors[i],j);
-                    if(!newPosition.inBoard()){
-                        continue;
-                    }
-                    ChessPiece pieceAtNew = board.getPiece(newPosition);
-                    if(pieceAtNew == null){
-                        moves.add(new ChessMove(myPosition,newPosition));
-                    }
-                    else if(pieceAtNew.getTeamColor() != color){
-                        moves.add(new ChessMove(myPosition,newPosition));
-                        break;
-                    }
-                    else if(pieceAtNew.getTeamColor() == color){
-                        break;
-                    }
-                    else{
-                        throw new RuntimeException("Queen Move Error"); 
-                    }
-                }
-                
-            }
+            addSlidingMoves(moves, board, myPosition, queenVectors);
         }
         else if(type == PieceType.ROOK){ // Movement options for ROOK (not castling)
             int[][] rookVectors = {{1,0},{0,1},{0,-1},{-1,0}};
-            for(int i = 0; i < rookVectors.length;i++){
-                for(int j = 1; j < 8; j++){
-                    ChessPosition newPosition = myPosition.add(rookVectors[i],j);
-                    if(!newPosition.inBoard()){
-                        continue;
-                    }
-                    ChessPiece pieceAtNew = board.getPiece(newPosition);
-                    if(pieceAtNew == null){
-                        moves.add(new ChessMove(myPosition,newPosition));
-                    }
-                    else if(pieceAtNew.getTeamColor() != color){
-                        moves.add(new ChessMove(myPosition,newPosition));
-                        break;
-                    }
-                    else if(pieceAtNew.getTeamColor() == color){
-                        break;
-                    }
-                    else{
-                        throw new RuntimeException("Rook Move Error"); 
-                    }
-                }
-            }
+            addSlidingMoves(moves, board, myPosition, rookVectors);
         }
         else if(type == PieceType.BISHOP){ // Movement options for BISHOP
             int[][] bishopVectors = {{1,1},{-1,1},{1,-1},{-1,-1}};
-            for(int i = 0; i < bishopVectors.length;i++){
-                for(int j = 1; j < 8; j++){
-                    ChessPosition newPosition = myPosition.add(bishopVectors[i],j);
-                    if(!newPosition.inBoard()){
-                        continue;
-                    }
-                    ChessPiece pieceAtNew = board.getPiece(newPosition);
-                    if(pieceAtNew == null){
-                        moves.add(new ChessMove(myPosition,newPosition));
-                    }
-                    else if(pieceAtNew.getTeamColor() != color){
-                        moves.add(new ChessMove(myPosition,newPosition));
-                        break;
-                    }
-                    else if(pieceAtNew.getTeamColor() == color){
-                        break;
-                    }
-                    else{
-                        throw new RuntimeException("Bishop Move Error"); 
-                    }
-                }
-                
-            }
+            addSlidingMoves(moves, board, myPosition, bishopVectors);
         }
         else if(type == PieceType.KNIGHT){ // Movement options for KNIGHT
             int[][] knightVectors = {{2,1},{1,2},{-2,1},{-1,2},{2,-1},{1,-2},{-2,-1},{-1,-2}};
@@ -220,7 +155,31 @@ public class ChessPiece {
         }
         return moves;
     }
-    
+    public void addSlidingMoves(Collection<ChessMove> moves, ChessBoard board, ChessPosition myPosition, int[][] moveVectors){
+        for(int i = 0; i < moveVectors.length;i++){
+            for(int j = 1; j < 8; j++){
+                ChessPosition newPosition = myPosition.add(moveVectors[i],j);
+                if(!newPosition.inBoard()){
+                    continue;
+                }
+                ChessPiece pieceAtNew = board.getPiece(newPosition);
+                if(pieceAtNew == null){
+                    moves.add(new ChessMove(myPosition,newPosition));
+                }
+                else if(pieceAtNew.getTeamColor() != color){
+                    moves.add(new ChessMove(myPosition,newPosition));
+                    break;
+                }
+                else if(pieceAtNew.getTeamColor() == color){
+                    break;
+                }
+                else{
+                    throw new RuntimeException("Piece Move Error"); 
+                }
+            }
+            
+        }
+    }
     public void pawnPromotionMoves(Collection<ChessMove> moves, ChessPosition myPosition, ChessPosition newPosition){
         moves.add(new ChessMove(myPosition, newPosition,ChessPiece.PieceType.BISHOP));
         moves.add(new ChessMove(myPosition, newPosition,ChessPiece.PieceType.ROOK));
