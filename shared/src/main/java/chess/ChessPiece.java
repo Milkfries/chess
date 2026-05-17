@@ -3,6 +3,8 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import chess.ChessGame.TeamColor;
+
 /**
  * Represents a single chess piece
  * <p>
@@ -140,6 +142,9 @@ public class ChessPiece {
             ChessPosition forwardOnePosition = myPosition.add(new int[]{1*flip,0});
             ChessPosition leftCapturePosition = myPosition.add(new int[]{1*flip,-1});
             ChessPosition rightCapturePosition = myPosition.add(new int[]{1*flip,1});
+
+            TeamColor leftCaptureColor = board.getPiece(leftCapturePosition).getTeamColor();
+            TeamColor rightCaptureColor = board.getPiece(rightCapturePosition).getTeamColor();
             if(forwardOnePosition.inBoard() && board.getPiece(forwardOnePosition) == null){ // Normal go forward 1 move
                 if(myPosition.getRow() == promoteRow){
                     pawnPromotionMoves(moves,myPosition,forwardOnePosition);
@@ -156,7 +161,7 @@ public class ChessPiece {
             }
             //Checks if you can capture left or right
 
-            if(leftCapturePosition.inBoard() && board.getPiece(leftCapturePosition) != null && board.getPiece(leftCapturePosition).getTeamColor() != color){
+            if(leftCapturePosition.inBoard() && board.getPiece(leftCapturePosition) != null &&  leftCaptureColor != color){
                 if(myPosition.getRow() == promoteRow){
                     pawnPromotionMoves(moves,myPosition,leftCapturePosition);
                 }
@@ -164,7 +169,7 @@ public class ChessPiece {
                     moves.add(new ChessMove(myPosition, leftCapturePosition));
                 }  
             }
-            if(rightCapturePosition.inBoard() && board.getPiece(rightCapturePosition) != null && board.getPiece(rightCapturePosition).getTeamColor() != color){
+            if(rightCapturePosition.inBoard() && board.getPiece(rightCapturePosition) != null && rightCaptureColor != color){
                 if(myPosition.getRow() == promoteRow){
                     pawnPromotionMoves(moves,myPosition,rightCapturePosition);
                 }
