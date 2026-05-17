@@ -69,8 +69,9 @@ public class ChessMove {
         }
         ChessMove other = (ChessMove) obj;
         if (start == null) {
-            if (other.start != null)
+            if (other.start != null){
                 return false;
+            }
         } else if (!start.equals(other.start)){
             return false;
         }
