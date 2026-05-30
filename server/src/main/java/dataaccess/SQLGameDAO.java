@@ -21,7 +21,7 @@ public class SQLGameDAO implements GameDAO{
             String blackUsername = gameData.blackUsername();
             String gameName = gameData.gameName();
             if(gameName == null || gameData.game() == null){
-                throw new DataAccessException("error: bad request");
+                throw new DataAccessException("Error: bad request");
             }
             String gameJSON = new Gson().toJson(gameData.game());
             var statement = "INSERT INTO gameData (whiteUsername,blackUsername,gameName,game) VALUES (?,?,?,?)";
@@ -37,12 +37,12 @@ public class SQLGameDAO implements GameDAO{
                     int test = rs.getInt(1);
                     return test;    
                 }
-                throw new DataAccessException("error: failed to insert gameData");
+                throw new DataAccessException("Error: failed to insert gameData");
             }
 
         }
         catch (Exception e){
-            throw new DataAccessException("error: failed to insert gameData");
+            throw new DataAccessException("Error: failed to insert gameData");
         }
     }
 
@@ -60,7 +60,7 @@ public class SQLGameDAO implements GameDAO{
             
         }
         catch(Exception e){
-            throw new DataAccessException("error: failed to get gameData");
+            throw new DataAccessException("Error: failed to get gameData");
         }
 
         return null;
@@ -83,13 +83,13 @@ public class SQLGameDAO implements GameDAO{
                 int rowsUpdated = preparedStatement.executeUpdate();
 
                 if (rowsUpdated == 0){
-                    throw new DataAccessException("error: bad request");
+                    throw new DataAccessException("Error: bad request");
                 }
             }
 
         }
         catch (Exception e){
-            throw new DataAccessException("error: failed to update gameData");
+            throw new DataAccessException("Error: failed to update gameData");
         }
     }
 
@@ -107,7 +107,7 @@ public class SQLGameDAO implements GameDAO{
             
         }
         catch(Exception e){
-            throw new DataAccessException("error: failed to get games");
+            throw new DataAccessException("Error: failed to get games");
         }
 
         return games;
@@ -125,7 +125,7 @@ public class SQLGameDAO implements GameDAO{
 
         }
         catch (Exception e){
-            throw new DataAccessException("error: failed to delete gameData");
+            throw new DataAccessException("Error: failed to delete gameData");
         }
     }
 
@@ -140,7 +140,7 @@ public class SQLGameDAO implements GameDAO{
 
         }
         catch (Exception e){
-            throw new DataAccessException("error: failed to clear gameData");
+            throw new DataAccessException("Error: failed to clear gameData");
         }
     }
     private GameData readGameData(ResultSet rs) throws Exception{
