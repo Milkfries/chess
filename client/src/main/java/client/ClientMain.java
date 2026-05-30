@@ -55,12 +55,14 @@ public class ClientMain {
         
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_16);
         String line = null;
+        String[] command = null;
+        int commandCount = 0;
         // drawGame(out, gameData);
 
         try(Scanner scanner = new Scanner(System.in)){
             
             clearScreen(out);
-            out.print("Welcome to Dylan Hale's Chess Client - Type Help to see Commands\n");
+            out.print("Welcome to Dylan Hale's Chess Client - Type help to see Commands\n");
             quitProgram: while(true){
                 setType(out);
                 switch (currentState) { // state machine for UI
@@ -69,20 +71,26 @@ public class ClientMain {
                         // START PRELOGIN SCREEN
                         //
 
-                        out.print("Chess Client >> ");
+                        out.print("[chess_client] >> ");
                         line = scanner.nextLine().toLowerCase();
+                        command = line.split("\\s+");
+                        commandCount = command.length;
 
-                        if(line.equals("help")){
-                            // helpPreLogin(out);
-                            drawGame(out, testGameData);
+                        if(command[0].equals("help") && commandCount == 1){
+                            helpPreLogin(out);
                         }
-                        else if(line.equals("login")){
-                            login(out,scanner);
+                        else if(command[0].equals("login") && commandCount == 3){
+                            String username = command[1];
+                            String password = command[2];
+                            login(out,username,password);
                         }
-                        else if(line.equals("register")){
-                            register(out, scanner);
+                        else if(command[0].equals("register") && commandCount == 4){
+                            String username = command[1];
+                            String password = command[2];
+                            String email = command[3];
+                            register(out,username,password,email);
                         }
-                        else if(line.equals("quit")){
+                        else if(command[0].equals("quit") && commandCount == 1){
                             quitProgram(out);
                         }
                         else{
@@ -121,7 +129,7 @@ public class ClientMain {
                         }
                         else if(line.equals("quit")){
                             logout(out);
-                            quitProgram(out);
+                            quitLogoutProgram(out);
                         }
                         else{
                             notRecognized(out);
@@ -146,126 +154,73 @@ public class ClientMain {
 
 private static void quitProgram(PrintStream out) {
     server.stop();
-    clearScreen(out);
+    currentState = ClientState.QUIT;
+}
+private static void quitLogoutProgram(PrintStream out) {
+    logout(out);
+    server.stop();
     currentState = ClientState.QUIT;
 }
  private static void helpPreLogin(PrintStream out) {
 
         out.print("""
+            login <USERNAME> <PASSWORD> - to play
+            register <USERNAME> <PASSWORD> <EMAIL> - to create an account
+            quit - stop playing
+            help - show commands
 
-                -- Valid commands --
-
-                Help - Displays commands you can run
-                Quit - Ends the program
-                Login - Logs into the chess server
-                Register - Make a new account in the server
-
-                """);
+            """);
     }
     private static void helpPostLogin(PrintStream out) {
 
         out.print("""
+            create <NAME> - make new game
+            list - see all games
+            join <ID> <WHITE|BLACK> - join game as white or black
+            observe <ID> - watch a game
+            logout - log out of account
+            quit - stop playing
+            help - show commands
 
-                -- Valid commands --
-
-                Help - Displays commands you can run
-                Logout - Logs out of the server
-                Create Game - Create a new chess game
-                List Games - See a list of all current chess games
-                Join Game - Join an existing chess game
-                Observe Game - Watch a current chess game
-
-                """);
+            """);
     }
     private static void notRecognized(PrintStream out) {
 
         out.print("""
-
                 This command was not recognized, please try again.
 
                 """);
     }
-    private static void login(PrintStream out, Scanner scanner) {
-        clearScreen(out);
-        out.print("""
-                -- Login Page --
-
-                """);
-        out.print("Username: \n");
-        out.print("Password: ");
-        out.print(moveCursor(11,3));
-        String username = scanner.nextLine();
-        try{
-            currentUser = username.substring(0,1).toUpperCase() + username.substring(1).toLowerCase();
-        }
-        catch(Exception e){
-            currentUser = username;
-        }
-        out.print(moveCursor(11,4));  
-        String password = scanner.nextLine();
-        clearScreen(out);
-        out.print("""
-                -- Logging In --
-
-                """);
+    private static void login(PrintStream out, String username, String password) {
         try{
             LoginRequest loginRequest = new LoginRequest(username, password);
             LoginResult result = serverFacade.login(loginRequest);
             currentAuthToken = result.authToken();
-
-            clearScreen(out);
-            out.print("SUCCESS - [" + currentUser+"] has logged in\n\n");
+            currentUser = username;
+            out.print("SUCCESS - [" + currentUser+"] has logged in\n");
 
             currentState = ClientState.POSTLOGIN;
         }
         catch(Exception e){
-            clearScreen(out);
             out.print("-- FAILED TO LOGIN --\n- ");
             out.print(e.getMessage());
-            out.print(" -\n\n"); 
+            out.print(" -\n"); 
         }
     }
-    private static void register(PrintStream out, Scanner scanner) {
-        ScreenDrawing.clearScreen(out);
-        ScreenDrawing.setType(out);
-        out.print("""
-                -- Registration Page --
-
-                """);
-        out.print("Username: \n");
-        out.print("Password: \n");
-        out.print("Email: ");
-
-        out.print(moveCursor(11,3));
-        String username = scanner.nextLine();
-        currentUser = username.substring(0,1).toUpperCase() + username.substring(1).toLowerCase();
-        out.print(moveCursor(11,4));  
-        String password = scanner.nextLine();
-        out.print(moveCursor(8,5));  
-        String email = scanner.nextLine();
-
-        clearScreen(out);
-        out.print("""
-
-                -- Registering --
-
-                """);
-
-        RegisterRequest request = new RegisterRequest(username,password,email);
+    private static void register(PrintStream out, String username, String password, String email) {
         try{
+            RegisterRequest request = new RegisterRequest(username,password,email);
             RegisterResult result = serverFacade.register(request);
             currentAuthToken = result.authToken();
-            clearScreen(out);
-            setType(out);
+            currentUser = username;
             out.print("SUCCESS - [" + currentUser+"] has been registered and logged in\n\n");
 
             currentState = ClientState.POSTLOGIN;
         }
         catch(Exception e){
-            clearScreen(out);
             out.print("-- FAILED TO REGISTER --\n- ");
             out.print(e.getMessage());
-            out.print(" -\n\n");
+            out.print(" -\n");
         }
     }
 
@@ -273,24 +228,23 @@ private static void quitProgram(PrintStream out) {
         LogoutRequest request = new LogoutRequest(currentAuthToken);
         try{
             serverFacade.logout(request);
-            clearScreen(out);
+            currentUser = null;
             out.print("SUCCESS - [" + currentUser+"] has been logged out\n\n");
             currentUser = null;
             currentAuthToken = null;
             currentState = ClientState.PRELOGIN;
         }
         catch(Exception e){
-            clearScreen(out);
             out.print("-- FAILED TO LOGOUT --\n- ");
             out.print(e.getMessage());
-            out.print(" -\n\n");
+            out.print(" -\n");
         }
 
         
 
     }
-    private static void createGame(PrintStream out, Scanner scanner){ScreenDrawing.clearScreen(out);
-        ScreenDrawing.setType(out);
+    private static void createGame(PrintStream out, Scanner scanner){
+        
 
         out.print("""
                 -- Create Game Page --
@@ -300,26 +254,19 @@ private static void quitProgram(PrintStream out) {
 
         String gameName = scanner.nextLine();
 
-        clearScreen(out);
-        out.print("""
-
-                -- CREATING GAME --
-
-                """);
+        out.print("-- CREATING GAME --");
 
         CreateGameRequest createGameRequest = new CreateGameRequest(currentAuthToken, gameName);
         try{
             CreateGameResult createGameResult = serverFacade.createGame(createGameRequest);
-            clearScreen(out);
             setType(out);
             int gameID = createGameResult.gameID();
             out.print("SUCCESS - Game: [" + gameName +"] has been created with Game ID: <" + gameID + ">\n\n");
         }
         catch(Exception e){
-            clearScreen(out);
             out.print("-- FAILED TO CREATE GAME --\n- ");
             out.print(e.getMessage());
-            out.print(" -\n\n");
+            out.print(" -\n");
         }
     }
     private static void listGames(PrintStream out,Scanner scanner){
@@ -338,19 +285,14 @@ private static void quitProgram(PrintStream out) {
             }
         }
         catch(Exception e){
-            clearScreen(out);
             out.print("-- FAILED TO GET GAMES --\n- ");
             out.print(e.getMessage());
-            out.print(" -\n\n");
+            out.print(" -\n");
         }
     }
     private static void joinGame(PrintStream out,Scanner scanner){
-        ScreenDrawing.clearScreen(out);
         ScreenDrawing.setType(out);
-        out.print("""
-                -- Join Game Page --
-
-                """);
+        out.print("-- Join Game Page --");
         out.print("Game ID: \n");
         out.print("Color (White/Black): ");
 
@@ -359,27 +301,20 @@ private static void quitProgram(PrintStream out) {
         out.print(moveCursor(22,4));  
         String color = scanner.nextLine();
 
-        clearScreen(out);
-        out.print("""
-
-                -- JOINING GAME --
-
-                """);
+        out.print("-- JOINING GAME --");
 
         JoinGameRequest request = new JoinGameRequest(currentAuthToken,color.toLowerCase(),gameID);
         try{
             serverFacade.joinGame(request);
-            clearScreen(out);
             setType(out);
             out.print("SUCCESS - [" + currentUser+"] has joined Chess Game [" + gameID + "] as [" + color.toUpperCase() + "]\n\n");
 
             currentState = ClientState.POSTLOGIN;
         }
         catch(Exception e){
-            clearScreen(out);
             out.print("-- FAILED TO REGISTER --\n- ");
             out.print(e.getMessage());
-            out.print(" -\n\n");
+            out.print(" -\n");
         }
     }
     
