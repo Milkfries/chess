@@ -80,7 +80,11 @@ public class SQLGameDAO implements GameDAO{
                 preparedStatement.setString(2,blackUsername);
                 preparedStatement.setString(3,gameJSON);
                 preparedStatement.setInt(4,gameID);
-                preparedStatement.executeUpdate();
+                int rowsUpdated = preparedStatement.executeUpdate();
+
+                if (rowsUpdated == 0){
+                    throw new DataAccessException("error: bad request");
+                }
             }
 
         }
