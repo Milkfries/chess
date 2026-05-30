@@ -20,6 +20,9 @@ public class SQLGameDAO implements GameDAO{
             String whiteUsername = gameData.whiteUsername();
             String blackUsername = gameData.blackUsername();
             String gameName = gameData.gameName();
+            if(gameName == null || gameData.game() == null){
+                throw new DataAccessException("error: bad request");
+            }
             String gameJSON = new Gson().toJson(gameData.game());
             var statement = "INSERT INTO gameData (whiteUsername,blackUsername,gameName,game) VALUES (?,?,?,?)";
 
@@ -77,7 +80,11 @@ public class SQLGameDAO implements GameDAO{
                 preparedStatement.setString(2,blackUsername);
                 preparedStatement.setString(3,gameJSON);
                 preparedStatement.setInt(4,gameID);
-                preparedStatement.executeUpdate();
+                int rowsUpdated = preparedStatement.executeUpdate();
+
+                if (rowsUpdated == 0){
+                    throw new DataAccessException("error: bad request");
+                }
             }
 
         }
