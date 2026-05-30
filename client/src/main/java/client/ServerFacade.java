@@ -44,7 +44,7 @@ public class ServerFacade {
             // to login - POST /user requires username, password, email (RegisterRequest)
             String bodyJSON = serializer.toJson(registerRequest); // turns request into json for http call
             var httpResponse = sendHTTPRequest("POST","/user",null,bodyJSON); // calls method to send the http request with necessary information
-            if(httpResponse.statusCode() != 200){ // checks if the request failed to throw error
+            if(httpResponse.statusCode() != 200){ // checks if the request failed to throw Error
                 throw new Exception(httpResponse.body());
             }
             return serializer.fromJson(httpResponse.body(), RegisterResult.class); // turns json from request back into an object
@@ -54,7 +54,7 @@ public class ServerFacade {
                 throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
             }
             else{
-                throw new Exception("An error occured, please try again");
+                throw new Exception("Error: please try again");
             }
         }
     }
@@ -73,7 +73,7 @@ public class ServerFacade {
                 throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
             }
             else{
-                throw new Exception("An error occured, please try again");
+                throw new Exception("Error: please try again");
             }
         }
     }
@@ -89,7 +89,7 @@ public class ServerFacade {
                 throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
             }
             else{
-                throw new Exception("An error occured, please try again");
+                throw new Exception("Error: please try again");
             }
         }
     }
@@ -107,7 +107,7 @@ public class ServerFacade {
                 throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
             }
             else{
-                throw new Exception("An error occured, please try again");
+                throw new Exception("Error: please try again");
             }
         }
     }
@@ -124,7 +124,7 @@ public class ServerFacade {
                 throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
             }
             else{
-                throw new Exception("An error occured, please try again");
+                throw new Exception("Error: please try again");
             }
         }
     } 
@@ -141,7 +141,7 @@ public class ServerFacade {
                 throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
             }
             else{
-                throw new Exception("An error occured, please try again");
+                throw new Exception("Error: please try again");
             }
         }
     }
@@ -160,7 +160,7 @@ public class ServerFacade {
                 throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
             }
             else{
-                throw new Exception("An error occured, please try again");
+                throw new Exception("Error: please try again");
             }
         }
     }
