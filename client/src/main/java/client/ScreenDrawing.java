@@ -5,45 +5,53 @@ import static ui.EscapeSequences.*;
 import java.io.PrintStream;
 
 import chess.*;
+import chess.ChessGame.TeamColor;
 import model.GameData;
 
 public class ScreenDrawing {
+    private static PrintStream out;
 
-    //Chessboard Drawing
-    public static void drawGame(PrintStream out, GameData game){
-        clearScreen(out);
-        setType(out);
-        out.print("Chess game: " + game.gameName() + " -- Game: " + game.gameID() + "\n");
-        out.print("White pieces: " + game.whiteUsername() + "\nvs\nBlack pieces: " + game.blackUsername());
-        out.print("\n");
-        setBlack(out);
-        drawChessBoard(out, game.game());
-        setType(out);
+    // Pass in print stream from client
+    public static void initStream(PrintStream ps){
+        out = ps;
     }
-    private static void drawChessBoard(PrintStream out, ChessGame game){
-        for(int row = 8; row >0; row--){
+    //Chessboard Drawing
+    public static void drawGame(GameData game, ChessGame.TeamColor color){
+        // TODO Make drawGame have border that gives chess coordinates, also flip board if you are black
+        clearScreen();
+        setType();
+        out.print("Chess Game: " + game.gameName() + "\n\n");
+        out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
+        out.print("\n");
+        setBlack();
+        drawChessBoard(game.game(),color == TeamColor.WHITE ? false : true);
+        setType();
+    }
+    private static void drawChessBoard(ChessGame game, boolean flipBoard){
+        for(int row = 8; row > 0; row--){
             for(int space = 0; space <3; space++){
                 for(int col = 1; col < 9; col++){
                     boolean blankRow = true;
                     if(space == 1){
                         blankRow = false;
                     }
-                    printPiece(out, game, row, col,blankRow);
+                    printPiece(game, row, col,blankRow);
                 }
                 out.print("\n");
             }  
         }
+        setType();
     }
-    private static void printPiece(PrintStream out, ChessGame game, int row, int col, boolean blankRow){
+    private static void printPiece(ChessGame game, int row, int col, boolean blankRow){
         ChessBoard board = game.getBoard();
         ChessPosition position = new ChessPosition(row, col);
         ChessPiece piece = board.getPiece(position);
 
-        if((row+col) % 2 == 0){ // determine if the square should be white or black
-            setWhiteType(out);
+        if((row+col) % 2 == 1){ // determine if the square should be white or black
+            setWhiteType();
         }
         else{
-            setBlueType(out);
+            setBlueType();
         }
         out.print(EMPTY);
         if(blankRow){
@@ -53,7 +61,7 @@ public class ScreenDrawing {
             out.print(getPieceCode(piece));
         }
         out.print(EMPTY);
-        setBlack(out);
+        setBlack();
     }
     private static String getPieceCode(ChessPiece piece){
         if(piece == null){
@@ -104,31 +112,31 @@ public class ScreenDrawing {
     public static String moveCursor(int x, int y){
         return moveCursorToLocation(x,y);
     }
-    public static void setType(PrintStream out){
+    public static void setType(){
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_WHITE);
     }
-    public static void setBlueType(PrintStream out){
+    public static void setBlueType(){
         out.print(SET_BG_COLOR_BLUE);
         out.print(SET_TEXT_COLOR_BLACK);
     }
-    public static void setWhiteType(PrintStream out){
+    public static void setWhiteType(){
         out.print(SET_BG_COLOR_WHITE);
         out.print(SET_TEXT_COLOR_BLACK);
     }
 
-    public static void setBlack(PrintStream out){
+    public static void setBlack(){
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_BLACK);
     }
 
-    public static void setBlink(PrintStream out){
+    public static void setBlink(){
         out.print(SET_TEXT_BLINKING);
     }
 
-    public static void clearScreen(PrintStream out){
-        setBlack(out);
+    public static void clearScreen(){
+        setBlack();
         out.print(ERASE_SCREEN);
-        setType(out);
+        setType();
     }
 }
