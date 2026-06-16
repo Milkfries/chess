@@ -101,12 +101,6 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
 
-        // if(isEnPassant(move)){
-        //     return;
-        // }
-        // if(isCastling(move)){
-        //     return;
-        // }
         ChessPosition startPosition = move.getStartPosition();
         ChessPiece piece = board.getPiece(startPosition);
 
@@ -140,24 +134,6 @@ public class ChessGame {
             setTeamTurn(TeamColor.BLACK);
         }
     }
-    // public boolean isEnPassant(ChessMove move) throws InvalidMoveException{
-    //     ChessPosition startPosition = move.getStartPosition();
-    //     ChessPiece piece = board.getPiece(startPosition);
-    //     if(piece == null){
-    //         return false;
-    //     }
-    //     ChessPosition endPosition = move.getEndPosition();
-    //     TeamColor color = piece.getTeamColor();
-    //     int flip = (color == TeamColor.WHITE) ? 1 : -1;
-    //     if(piece.getPieceType() == PieceType.PAWN && startPosition.getRow() == endPosition.getRow() && ((startPosition.getColumn()+1 == endPosition.getColumn())||(startPosition.getColumn()-1 == endPosition.getColumn()))){
-    //         makeMove(new ChessMove(startPosition, endPosition.add(new int[]{0,flip})));
-    //         board.addPiece(endPosition, null);
-    //         return true;
-    //     }
-    //     else{
-    //         return false;
-    //     }
-    // }
     public void makeMoveOnBoard(ChessMove move){
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
@@ -326,20 +302,26 @@ public class ChessGame {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj){
             return true;
-        if (obj == null)
+        }
+        if (obj == null){
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()){
             return false;
+        }
         ChessGame other = (ChessGame) obj;
-        if (teamTurn != other.teamTurn)
+        if (teamTurn != other.teamTurn){
             return false;
+        }
         if (board == null) {
-            if (other.board != null)
+            if (other.board != null){
                 return false;
-        } else if (!board.equals(other.board))
+            }
+        } else if (!board.equals(other.board)){
             return false;
+        }
         return true;
     }
 
