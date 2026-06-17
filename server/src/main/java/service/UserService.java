@@ -25,10 +25,14 @@ public class UserService {
 		String password = registerRequest.password();
 		String email = registerRequest.email();
 		Pattern pattern = Pattern.compile("\\s");
+		
+
+		if(username == null || password == null || username.isBlank() || password.isBlank()){
+			throw new BadRequestException("Error: bad request");
+		}
 		Matcher matcherUser = pattern.matcher(username);
 		Matcher matcherEmail = pattern.matcher(email);
-
-		if(matcherUser.find() || matcherEmail.find() || username == null || password == null || username.isBlank() || password.isBlank()){
+		if(matcherUser.find() || matcherEmail.find() ){
 			throw new BadRequestException("Error: bad request");
 		}
 		if(userDAO.getUser(username)!= null){
