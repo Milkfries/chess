@@ -3,7 +3,6 @@ package client;
 import static client.ScreenDrawing.clearScreen;
 import static client.ScreenDrawing.drawGame;
 import static client.ScreenDrawing.initStream;
-import static client.ScreenDrawing.moveCursor;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -13,16 +12,8 @@ import java.util.Scanner;
 import chess.ChessGame;
 import chess.ChessGame.TeamColor;
 import model.GameData;
-import request.CreateGameRequest;
-import request.JoinGameRequest;
-import request.ListGameRequest;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
-import result.CreateGameResult;
-import result.ListGameResult;
-import result.LoginResult;
-import result.RegisterResult;
+import request.*;
+import result.*;
 import server.Server;
 
 
