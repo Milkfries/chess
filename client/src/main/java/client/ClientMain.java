@@ -23,10 +23,12 @@ import result.CreateGameResult;
 import result.ListGameResult;
 import result.LoginResult;
 import result.RegisterResult;
+import server.Server;
 
 
 public class ClientMain {
     private static ServerFacade serverFacade;
+    private static Server server;
 
     private static String currentUser;
     private static ClientState currentState;
@@ -57,7 +59,9 @@ public class ClientMain {
         cachedGames = new HashMap<>();
     }
     private static void initServer(){
-        serverFacade = new ServerFacade("localhost");
+        server = new Server();
+        var port = server.run(8080);
+        serverFacade = new ServerFacade("localhost", port);
     }
 
     public static void mainLoop(){
@@ -150,6 +154,7 @@ public class ClientMain {
     }
     
     private static void quitProgram(){
+        server.stop();
         currentState = ClientState.QUIT;
     }
     private static void helpPreLogin() {
