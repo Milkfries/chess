@@ -14,12 +14,10 @@ import chess.ChessGame.TeamColor;
 import model.GameData;
 import request.*;
 import result.*;
-import server.Server;
 
 
 public class ClientMain {
     private static ServerFacade serverFacade;
-    private static Server server;
 
     private static String currentUser;
     private static ClientState currentState;
@@ -44,7 +42,7 @@ public class ClientMain {
         // var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         // System.out.println("♕ 240 Chess Client: " + piece);
         initStream(out);
-        initServer();
+        initServer(args[0]);
         mainLoop();
     }
     private static void initVariables(){
@@ -52,10 +50,8 @@ public class ClientMain {
         scanner = new Scanner(System.in);
         cachedGames = new HashMap<>();
     }
-    private static void initServer(){
-        server = new Server();
-        var port = server.run(0);
-        serverFacade = new ServerFacade("localhost", port);
+    private static void initServer(String port){
+        serverFacade = new ServerFacade("localhost", Integer.parseInt(port));
     }
 
     public static void mainLoop(){
@@ -148,7 +144,6 @@ public class ClientMain {
     }
     
     private static void quitProgram(){
-        server.stop();
         currentState = ClientState.QUIT;
     }
     private static void helpPreLogin() {
