@@ -33,12 +33,7 @@ public class ServerFacade {
             return serializer.fromJson(httpResponse.body(), RegisterResult.class); // turns json from request back into an object
         }
         catch(Exception e){
-            if(e.getMessage().contains("Error: ")){
-                throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
-            }
-            else{
-                throw new Exception("Error: please try again");
-            }
+            throw new Exception(getErrorMessage(e));
         }
     }
     public LoginResult login(LoginRequest loginRequest)  throws Exception{ 
@@ -52,12 +47,7 @@ public class ServerFacade {
             return serializer.fromJson(httpResponse.body(), LoginResult.class);
         }
         catch(Exception e){
-            if(e.getMessage().contains("Error: ")){
-                throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
-            }
-            else{
-                throw new Exception("Error: please try again");
-            }
+            throw new Exception(getErrorMessage(e));
         }
     }
     public void logout(LogoutRequest logoutRequest) throws Exception{
@@ -68,12 +58,7 @@ public class ServerFacade {
             }
         }
         catch (Exception e){
-            if(e.getMessage().contains("Error: ")){
-                throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
-            }
-            else{
-                throw new Exception("Error: please try again");
-            }
+            throw new Exception(getErrorMessage(e));
         }
     }
     public CreateGameResult createGame(CreateGameRequest createGameRequest) throws Exception{
@@ -86,12 +71,7 @@ public class ServerFacade {
             return serializer.fromJson(httpResponse.body(), CreateGameResult.class);
         }
         catch (Exception e){
-            if(e.getMessage().contains("Error: ")){
-                throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
-            }
-            else{
-                throw new Exception("Error: please try again");
-            }
+            throw new Exception(getErrorMessage(e));
         }
     }
     public ListGameResult listGames(ListGameRequest listGameRequest) throws Exception{
@@ -103,12 +83,7 @@ public class ServerFacade {
             return serializer.fromJson(httpResponse.body(), ListGameResult.class);
         }
         catch (Exception e){
-            if(e.getMessage().contains("Error: ")){
-                throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
-            }
-            else{
-                throw new Exception("Error: please try again");
-            }
+            throw new Exception(getErrorMessage(e));
         }
     } 
     public void joinGame (JoinGameRequest joinGameRequest) throws Exception{
@@ -120,12 +95,7 @@ public class ServerFacade {
             }
         }
         catch (Exception e){
-            if(e.getMessage().contains("Error: ")){
-                throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
-            }
-            else{
-                throw new Exception("Error: please try again");
-            }
+            throw new Exception(getErrorMessage(e));
         }
     }
     public void clear() throws Exception{
@@ -139,12 +109,7 @@ public class ServerFacade {
             }
         }
         catch(Exception e){
-            if(e.getMessage().contains("Error: ")){
-                throw new Exception(e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2));
-            }
-            else{
-                throw new Exception("Error: please try again");
-            }
+            throw new Exception(getErrorMessage(e));
         }
     }
     private String fullUrl(String host, int port, String path){
@@ -177,5 +142,14 @@ public class ServerFacade {
 
         HttpRequest request = builder.build();
         return HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString()); //IOException, and InterruptedException
+    }
+
+    private String getErrorMessage(Exception e) throws Exception{
+        if(e.getMessage().contains("Error: ")){
+            return e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2);
+        }
+        else{
+            return "Error: please try again";
+        }
     }
 }
