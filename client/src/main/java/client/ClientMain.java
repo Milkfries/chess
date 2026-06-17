@@ -53,7 +53,9 @@ public class ClientMain {
         cachedGames = new HashMap<>();
     }
     private static void initServer(){
-        serverFacade = new ServerFacade("localhost", 0);
+        server = new Server();
+        var port = server.run(0);
+        serverFacade = new ServerFacade("localhost", port);
     }
 
     public static void mainLoop(){
