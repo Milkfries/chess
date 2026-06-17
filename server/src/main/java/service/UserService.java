@@ -27,7 +27,7 @@ public class UserService {
 		Pattern pattern = Pattern.compile("\\s");
 		
 
-		if(username == null || password == null || username.isBlank() || password.isBlank()){
+		if(username == null || password == null || email == null || username.isBlank() || password.isBlank() || email.isBlank()){
 			throw new BadRequestException("Error: bad request");
 		}
 		Matcher matcherUser = pattern.matcher(username);

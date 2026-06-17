@@ -89,7 +89,7 @@ public class UserServiceTests {
     @Test
     @DisplayName("Register No Email")
     public void noEmail() throws Exception{
-        Assertions.assertDoesNotThrow(()->{
+        Assertions.assertThrows(BadRequestException.class, ()->{
             userService.register(registerForgotEmail);
             });
     }
