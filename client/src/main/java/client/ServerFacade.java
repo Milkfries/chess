@@ -11,19 +11,15 @@ import com.google.gson.Gson;
 
 import request.*;
 import result.*;
-import server.Server;
 
 public class ServerFacade {
     private static final HttpClient httpClient = HttpClient.newHttpClient();
     private String host;
     private int port;
     private Gson serializer;
-    private Server server;
-
-    public ServerFacade(String host){
+    public ServerFacade(String host, int port){
         this.host = host;
-        server = new Server();
-        this.port = server.run(0);
+        this.port = port;
         this.serializer = new Gson();
     }
     // private void get(String host, int port, String path) throws Exception {
@@ -198,8 +194,5 @@ public class ServerFacade {
 
         HttpRequest request = builder.build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString()); //IOException, and InterruptedException
-    }
-    void stopServer(){
-        server.stop();
     }
 }
