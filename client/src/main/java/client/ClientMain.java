@@ -68,9 +68,6 @@ public class ClientMain {
                 case POSTLOGIN:
                     postLoginOutput();
                     break;
-                // case GAMEPLAY:
-                //     gameplayOutput();
-                //     break;
                 case QUIT:
                     break quitProgram;
                 default:

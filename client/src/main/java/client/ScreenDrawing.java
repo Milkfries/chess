@@ -108,10 +108,6 @@ public class ScreenDrawing {
     }
 
     // Basic drawing functions
-
-    // public static String moveCursor(int x, int y){
-    //     return moveCursorToLocation(x,y);
-    // }
     public static void setType(){
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_WHITE);
