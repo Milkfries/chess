@@ -12,7 +12,10 @@ public class ServerFacadeTests {
 
     @BeforeAll
     public static void init() {
-        server = new ServerFacade("localhost");
+        server = new Server();
+        var port = server.run(8080);
+        System.out.println("Started test HTTP server on " + port);
+        facade = new ServerFacade("localhost", port);
     }
 
     @AfterAll
