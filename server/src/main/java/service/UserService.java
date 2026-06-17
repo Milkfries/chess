@@ -50,13 +50,14 @@ public class UserService {
 	public LoginResult login(LoginRequest loginRequest) throws DataAccessException, BadRequestException, UnauthorizedException {
 		String username = loginRequest.username();
 		String password = loginRequest.password();
-		Pattern pattern = Pattern.compile("\\s");
-		Matcher matcherUser = pattern.matcher(username);
-
-		if(matcherUser.find() ||username == null || password == null || username.isBlank() || password.isBlank()){
+		if( username == null || password == null || username.isBlank() || password.isBlank()){
 			throw new BadRequestException("Error: bad request");
 		}
-
+		Pattern pattern = Pattern.compile("\\s");
+		Matcher matcherUser = pattern.matcher(username);
+		if(matcherUser.find()){
+			throw new BadRequestException("Error: bad request");
+		}
 		UserData userData = userDAO.getUser(username);
 
 		if(userData == null){ // checks for invalid username
