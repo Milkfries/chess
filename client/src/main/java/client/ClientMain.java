@@ -23,12 +23,10 @@ import result.CreateGameResult;
 import result.ListGameResult;
 import result.LoginResult;
 import result.RegisterResult;
-import server.Server;
 
 
 public class ClientMain {
     private static ServerFacade serverFacade;
-    private static Server server;
 
     private static String currentUser;
     private static ClientState currentState;
@@ -48,12 +46,9 @@ public class ClientMain {
 
 
     public static void main(String[] args) {
-        initVariables();
-        
-        // var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        // System.out.println("♕ 240 Chess Client: " + piece);
-        initStream(out);
         initServer();
+        initVariables();
+        initStream(out);
         mainLoop();
     }
     private static void initVariables(){
@@ -62,9 +57,7 @@ public class ClientMain {
         cachedGames = new HashMap<>();
     }
     private static void initServer(){
-        server = new Server();
-        var port = server.run(8080);
-        serverFacade = new ServerFacade("localhost", port);
+        serverFacade = new ServerFacade("localhost");
     }
 
     public static void mainLoop(){
@@ -157,7 +150,6 @@ public class ClientMain {
     }
     
     private static void quitProgram(){
-        server.stop();
         currentState = ClientState.QUIT;
     }
     private static void helpPreLogin() {
