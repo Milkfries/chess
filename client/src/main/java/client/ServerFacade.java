@@ -13,7 +13,7 @@ import request.*;
 import result.*;
 
 public class ServerFacade {
-    private static final HttpClient httpClient = HttpClient.newHttpClient();
+    private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private String host;
     private int port;
     private Gson serializer;
@@ -176,6 +176,6 @@ public class ServerFacade {
         // could add HEAD method        
 
         HttpRequest request = builder.build();
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString()); //IOException, and InterruptedException
+        return HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString()); //IOException, and InterruptedException
     }
 }
