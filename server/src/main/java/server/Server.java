@@ -152,8 +152,8 @@ public class Server {
     private void createGame(Context ctx){
         try{
             String authToken = ctx.header("Authorization");
-            CreateGameRequest temp_createGameRequest = serializer.fromJson(ctx.body(),CreateGameRequest.class);
-            CreateGameRequest createGameRequest = new CreateGameRequest(authToken, temp_createGameRequest.gameName());
+            CreateGameRequest tempCreateGameRequest = serializer.fromJson(ctx.body(),CreateGameRequest.class);
+            CreateGameRequest createGameRequest = new CreateGameRequest(authToken, tempCreateGameRequest.gameName());
             CreateGameResult createGameResult = gameService.createGame(createGameRequest);
 
             ctx.status(200);
@@ -172,8 +172,8 @@ public class Server {
     private void joinGame(Context ctx){
         try{
             String authToken = ctx.header("Authorization");
-            JoinGameRequest temp_joinGameRequest = serializer.fromJson(ctx.body(),JoinGameRequest.class);
-            JoinGameRequest joinGameRequest = new JoinGameRequest(authToken,temp_joinGameRequest.playerColor(),temp_joinGameRequest.gameID());
+            JoinGameRequest tempJoinGameRequest = serializer.fromJson(ctx.body(),JoinGameRequest.class);
+            JoinGameRequest joinGameRequest = new JoinGameRequest(authToken,tempJoinGameRequest.playerColor(),tempJoinGameRequest.gameID());
             gameService.joinGame(joinGameRequest);
 
             ctx.status(200);
