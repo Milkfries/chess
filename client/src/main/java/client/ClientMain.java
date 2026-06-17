@@ -57,7 +57,7 @@ public class ClientMain {
         cachedGames = new HashMap<>();
     }
     private static void initServer(){
-        serverFacade = new ServerFacade("localhost", 0);
+        serverFacade = new ServerFacade("localhost");
     }
 
     public static void mainLoop(){

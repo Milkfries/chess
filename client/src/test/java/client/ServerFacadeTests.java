@@ -4,25 +4,20 @@ import org.junit.jupiter.api.*;
 
 import request.*;
 import result.*;
-import server.Server;
 
 
 public class ServerFacadeTests {
 
-    private static Server server;
-    private static ServerFacade facade;
+    private static ServerFacade server;
 
     @BeforeAll
     public static void init() {
-        server = new Server();
-        var port = server.run(0);
-        System.out.println("Started test HTTP server on " + port);
-        facade = new ServerFacade("localhost", port);
+        server = new ServerFacade("localhost");
     }
 
     @AfterAll
     static void stopServer() {
-        server.stop();
+        server.stopServer();
     }
 
 
