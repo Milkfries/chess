@@ -22,23 +22,6 @@ public class ServerFacade {
         this.port = port;
         this.serializer = new Gson();
     }
-    // private void get(String host, int port, String path) throws Exception {
-    //     String urlString = String.format(Locale.getDefault(), "http://%s:%d%s", host, port, path);
-
-    //     HttpRequest request = HttpRequest.newBuilder()
-    //             .uri(new URI(urlString))
-    //             .timeout(java.time.Duration.ofMillis(5000))
-    //             .GET()
-    //             .build();
-
-    //     HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-    //     if (httpResponse.statusCode() >= 200 && httpResponse.statusCode() < 300) {
-    //         System.out.println(httpResponse.body());
-    //     } else {
-    //         System.out.println("Error: received status code " + httpResponse.statusCode());
-    //     }e
-    // }
     public RegisterResult register(RegisterRequest registerRequest) throws Exception{
         try{
             // to login - POST /user requires username, password, email (RegisterRequest)
