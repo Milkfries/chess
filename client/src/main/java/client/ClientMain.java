@@ -1,8 +1,6 @@
 package client;
 
-import static client.ScreenDrawing.clearScreen;
-import static client.ScreenDrawing.drawGame;
-import static client.ScreenDrawing.initStream;
+import static client.ScreenDrawing.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -246,9 +244,22 @@ public class ClientMain {
             int gameNumber = 1;
             for(GameData game : gameResult.games()){
                 out.print("  Game " + gameNumber + ": ");
-                out.print(game.gameName() + " (");
-                out.print("White: " + game.whiteUsername());
-                out.print(", Black: " + game.blackUsername() + ")\n");
+                out.print(" \"" + game.gameName() + "\" - ");
+                out.print("White: {");
+                if(game.whiteUsername() != null){
+                    out.print(game.whiteUsername());
+                }
+                else{
+                    out.print("empty");
+                }
+                out.print("} vs Black: {");
+                if(game.blackUsername() != null){
+                    out.print(game.blackUsername());
+                }
+                else{
+                   out.print("empty");
+                }
+                out.print("}\n");
 
                 cachedGames.put(gameNumber,game.gameID());
                 gameNumber++;
