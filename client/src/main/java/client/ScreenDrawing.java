@@ -23,7 +23,6 @@ public class ScreenDrawing {
     }
     //Chessboard Drawing
     public static void drawGame(GameData game, ChessGame.TeamColor color){
-        // TODO Make drawGame have border that gives chess coordinates, also flip board if you are black
         clearScreen();
         setType();
         out.print("Chess Game: " + game.gameName() + "\n\n");
@@ -39,7 +38,8 @@ public class ScreenDrawing {
         int rowStep = flipBoard ? 1 : -1;
 
         printEdge(flipBoard);
-        for(int row = rowStart; flipBoard ? (row <= rowEnd) : (row >= rowEnd) ; row+=rowStep){ // Flips the direction it reads board if from black's perspective
+        // Flips the direction it reads board if from black's perspective
+        for(int row = rowStart; flipBoard ? (row <= rowEnd) : (row >= rowEnd) ; row+=rowStep){ 
             for(int space = 0; space < 3; space++){
                 boolean blankRow = space != 1 ? true : false;
                 printEdgeBox(row, row, blankRow, flipBoard);
