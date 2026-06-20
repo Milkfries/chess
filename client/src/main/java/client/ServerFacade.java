@@ -86,7 +86,7 @@ public class ServerFacade {
             throw new Exception(getErrorMessage(e));
         }
     } 
-    public void joinGame (JoinGameRequest joinGameRequest) throws Exception{
+    public void joinGame(JoinGameRequest joinGameRequest) throws Exception{
         try{
             String bodyJSON = serializer.toJson(joinGameRequest);
             var httpResponse = sendHTTPRequest("PUT", "/game", joinGameRequest.authToken(), bodyJSON);
@@ -99,11 +99,9 @@ public class ServerFacade {
         }
     }
     public void clear() throws Exception{
+        //to clear - DELETE /db
         try{
-            //to clear - DELETE /db
-            
             var httpResponse = sendHTTPRequest("DELETE","/db",null,null);
-
             if(httpResponse.statusCode() != 200){
                 throw new Exception(httpResponse.body());
             }
@@ -138,12 +136,9 @@ public class ServerFacade {
         if(method.equals("DELETE")){
             builder.DELETE();
         }
-        // could add HEAD method        
-
         HttpRequest request = builder.build();
         return HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString()); //IOException, and InterruptedException
     }
-
     private String getErrorMessage(Exception e) throws Exception{
         if(e.getMessage().contains("Error: ")){
             return e.getMessage().substring(e.getMessage().indexOf("Error:"),e.getMessage().length()-2);
