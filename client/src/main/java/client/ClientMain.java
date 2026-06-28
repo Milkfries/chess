@@ -1,6 +1,6 @@
 package client;
 
-import static client.ScreenDrawing.*;
+import static ui.ScreenDrawing.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
