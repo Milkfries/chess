@@ -16,6 +16,8 @@ public class Server {
 
     private final Javalin javalin;
     private final Gson serializer;
+    private final WebSocketHandler webSocketHandler;
+
     //databases
     private AuthDAO authDAO;
     private UserDAO userDAO;
@@ -29,19 +31,6 @@ public class Server {
 
     public Server(){
 
-
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
-        // Register your endpoints and exception handlers here.
-
-
-        serializer = new Gson();
-        
-        // serialize to JSON example
-        // var json = serializer.toJson(game);
-
-        // // deserialize back to ChessGame example
-        // game = serializer.fromJson(json, ChessGame.class);
-
         //initialize database
         try{
             authDAO = new SQLAuthDAO();
@@ -49,19 +38,24 @@ public class Server {
             gameDAO = new SQLGameDAO();
         }
         catch(Exception e){
-            // authDAO = new MemoryAuthDAO();
             System.out.println(e.getMessage());
         }
-        
-        
-        
-        
 
         //initialize services
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(authDAO, gameDAO);
         clearService = new ClearService(userDAO, authDAO, gameDAO);
         
+        
+        webSocketHandler = new WebSocketHandler(userService,gameService);
+        javalin = Javalin.create(config -> config.staticFiles.add("web"));
+        serializer = new Gson();
+        
+        // serialize to JSON example
+        // var json = serializer.toJson(game);
+
+        // // deserialize back to ChessGame example
+        // game = serializer.fromJson(json, ChessGame.class);
     }
 
     public int run(int desiredPort) {
@@ -73,6 +67,11 @@ public class Server {
         javalin.get("/game",this::listGames);
         javalin.post("/game",this::createGame);
         javalin.put("/game",this::joinGame);
+        javalin.ws("/ws", ws -> {
+            ws.onConnect(webSocketHandler);
+            ws.onMessage(webSocketHandler);
+            ws.onClose(webSocketHandler);
+        });
         
         return javalin.port();
     }
