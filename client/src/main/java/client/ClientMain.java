@@ -1,6 +1,8 @@
 package client;
 
-import static ui.ScreenDrawing.*;
+import ui.ScreenDrawing;
+
+import static ui.ScreenDrawing.drawGame;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -12,18 +14,20 @@ import chess.ChessGame.TeamColor;
 import model.GameData;
 import request.*;
 import result.*;
+import websocket.messages.ServerMessage;
 
 
-public class ClientMain {
-    private static ServerFacade serverFacade;
+public class ClientMain implements ServerMessageObserver{
+    private ServerFacade serverFacade;
+    private WebsocketCommunicator websocket;
 
-    private static String currentUser;
-    private static ClientState currentState;
-    private static String currentAuthToken;
-    private static GameData currentGame = new GameData(1, "Dylan", "Cosmo", "Battle of Champions", new ChessGame());;
-    private static HashMap<Integer,Integer> cachedGames;
-    private static PrintStream out;
-    private static Scanner scanner;
+    private String currentUser;
+    private ClientState currentState;
+    private String currentAuthToken;
+    private GameData currentGame = new GameData(1, "Dylan", "Cosmo", "Battle of Champions", new ChessGame());;
+    private HashMap<Integer,Integer> cachedGames;
+    private PrintStream out;
+    private Scanner scanner;
 
 
     private enum ClientState {
@@ -33,30 +37,27 @@ public class ClientMain {
         QUIT
     }
 
-
-    public static void main(String[] args) {
+    public void main(String[] args) {
         initVariables();
-        
-        // var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        // System.out.println("♕ 240 Chess Client: " + piece);
-        initStream(out);
+        ScreenDrawing.initStream(out);
         initServer(args[0]);
         mainLoop();
     }
-    private static void initVariables(){
+    private void initVariables(){
         out = new PrintStream(System.out, true, StandardCharsets.UTF_16);
         scanner = new Scanner(System.in);
         cachedGames = new HashMap<>();
     }
-    private static void initServer(String port){
+    private void initServer(String port){
         serverFacade = new ServerFacade("localhost", Integer.parseInt(port));
+        websocket = new WebsocketCommunicator("localhost", this);
     }
 
-    public static void mainLoop(){
+    public void mainLoop(){
         currentState = ClientState.PRELOGIN;
         currentUser = null;
         currentAuthToken = null;
-        clearScreen();
+        ScreenDrawing.clearScreen();
         out.print("Welcome to Dylan Hale's Chess Client - Type help to see Commands\n");
         quitProgram: while(true){
             switch (currentState) { // state machine for UI
@@ -74,7 +75,7 @@ public class ClientMain {
         }
         scanner.close();
     }
-    private static void preLoginOutput(){
+    private void preLoginOutput(){
         out.print("[chess_client] >> ");
         String line = scanner.nextLine().toLowerCase();
         String[] command = line.split("\\s+");
@@ -101,7 +102,7 @@ public class ClientMain {
             notRecognized();
         }
     }
-    private static void postLoginOutput(){
+    private void postLoginOutput(){
         out.print("[" + currentUser + "] >> ");
         String line = scanner.nextLine().toLowerCase();
         String[] command = line.split("\\s+");
@@ -138,10 +139,10 @@ public class ClientMain {
         }
     }
     
-    private static void quitProgram(){
+    private void quitProgram(){
         currentState = ClientState.QUIT;
     }
-    private static void helpPreLogin() {
+    private void helpPreLogin() {
 
         out.print("""
               login <USERNAME> <PASSWORD> - to play
@@ -151,7 +152,7 @@ public class ClientMain {
 
             """);
     }
-    private static void helpPostLogin() {
+    private void helpPostLogin() {
 
         out.print("""
               create <NAME> - make new game
@@ -164,14 +165,14 @@ public class ClientMain {
 
             """);
     }
-    private static void notRecognized() {
+    private void notRecognized() {
 
         out.print("""
                   This command was not recognized, please try again.
 
                 """);
     }
-    private static void login(String username, String password) {
+    private void login(String username, String password) {
         try{
             LoginRequest loginRequest = new LoginRequest(username, password);
             LoginResult result = serverFacade.login(loginRequest);
@@ -187,7 +188,7 @@ public class ClientMain {
             out.print(" -\n"); 
         }
     }
-    private static void register(String username, String password, String email) {
+    private void register(String username, String password, String email) {
         try{
             RegisterRequest request = new RegisterRequest(username,password,email);
             RegisterResult result = serverFacade.register(request);
@@ -204,7 +205,7 @@ public class ClientMain {
         }
     }
 
-    private static void logout(){
+    private void logout(){
         LogoutRequest request = new LogoutRequest(currentAuthToken);
         try{
             serverFacade.logout(request);
@@ -222,7 +223,7 @@ public class ClientMain {
         
 
     }
-    private static void createGame(String gameName){
+    private void createGame(String gameName){
         try{
             CreateGameRequest createGameRequest = new CreateGameRequest(currentAuthToken, gameName);
             CreateGameResult createGameResult = serverFacade.createGame(createGameRequest);
@@ -235,7 +236,7 @@ public class ClientMain {
             out.print(" -\n");
         }
     }
-    private static void listGames(){
+    private void listGames(){
         try{
             cachedGames.clear();
             ListGameRequest gameRequest = new ListGameRequest(currentAuthToken);
@@ -272,7 +273,7 @@ public class ClientMain {
             out.print(" -\n");
         }
     }
-    private static void joinGame(String gameIDString, String color){
+    private void joinGame(String gameIDString, String color){
         try{
             int gameID = 0;
             try{
@@ -303,7 +304,7 @@ public class ClientMain {
             out.print(" -\n");
         }
     }
-    private static void observeGame(String gameIDString){
+    private void observeGame(String gameIDString){
         try{
             int gameID = 0;
             try{
@@ -325,5 +326,10 @@ public class ClientMain {
             out.print(e.getMessage());
             out.print(" -\n");
         }
+    }
+
+    @Override
+    public void notify(ServerMessage msg){
+
     }
 }
