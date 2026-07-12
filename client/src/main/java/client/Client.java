@@ -38,12 +38,9 @@ public class Client implements ServerMessageObserver{
         GAMEPLAY,
         QUIT
     }
-    public Client(){
-        initServer("8080");
-        run();
-    }
     public Client(String[] args) {
-        initServer(args[0]);
+        String port = args.length >= 1 ? args[0] : "8080";
+        initServer(port);
         run();
     }
     public void run(){
@@ -62,7 +59,7 @@ public class Client implements ServerMessageObserver{
     }
 
     public void mainLoop(){
-        currentState = ClientState.GAMEPLAY;
+        currentState = ClientState.PRELOGIN;
         currentGame = null;
         currentUser = null;
         currentColor = null;
@@ -77,8 +74,10 @@ public class Client implements ServerMessageObserver{
                 case POSTLOGIN:
                     postLoginOutput();
                     break;
-                case QUIT:
+                case GAMEPLAY:
                     gameplay();
+                    break;
+                case QUIT:
                     break quitProgram;
                 default:
                     break;
@@ -437,17 +436,14 @@ public class Client implements ServerMessageObserver{
         if(positionString.length() != 2){
             throw new Exception("Error: Not a valid position");
         }
-
-        int row = (int) positionString.charAt(1);
-        int col = (int) positionString.charAt(0) - 60; // a = 61 in ascii
-
+        int row = (int) positionString.charAt(1) - '0'; 
+        int col = (int) positionString.charAt(0) - 'a' + 1;
         if (row >= 1 && row <= 8 && row >= 1 && row <= 8){
             return new ChessPosition(row, col);
         }
         else{
             throw new Exception("Error: Not a valid position");
         }
-        
     }
     @Override
     public void notify(ServerMessage msg){
