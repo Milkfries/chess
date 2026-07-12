@@ -9,20 +9,20 @@ import chess.ChessGame.TeamColor;
 import model.GameData;
 
 public class ScreenDrawing {
-    private final static String[] BOARD_LETTERS = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
-    private static PrintStream out;
+    private final String[] BOARD_LETTERS = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
+    private PrintStream out;
 
     // Pass in print stream from client
-    public static void initStream(PrintStream ps){
+    public ScreenDrawing(PrintStream ps){
         out = ps;
     }
-    public static void clearScreen(){
+    public void clearScreen(){
         setBlack();
         out.print(ERASE_SCREEN);
         setType();
     }
     //Chessboard Drawing
-    public static void drawGame(GameData game, ChessGame.TeamColor color){
+    public void drawGame(GameData game, ChessGame.TeamColor color){
         clearScreen();
         setType();
         out.print("Chess Game: " + game.gameName() + "\n\n");
@@ -32,7 +32,7 @@ public class ScreenDrawing {
         drawChessBoard(game.game(),color == TeamColor.WHITE ? false : true);
         setType();
     }
-    private static void drawChessBoard(ChessGame game, boolean flipBoard){// Printing
+    private void drawChessBoard(ChessGame game, boolean flipBoard){// Printing
         int rowStart = flipBoard ? 1 : 8;
         int rowEnd = flipBoard ? 8 : 1;
         int rowStep = flipBoard ? 1 : -1;
@@ -54,7 +54,7 @@ public class ScreenDrawing {
 
         setType();
     }
-    private static void printPiece(ChessGame game, int row, int col, boolean blankRow){
+    private void printPiece(ChessGame game, int row, int col, boolean blankRow){
         ChessBoard board = game.getBoard();
         ChessPosition position = new ChessPosition(row, col);
         ChessPiece piece = board.getPiece(position);
@@ -76,7 +76,7 @@ public class ScreenDrawing {
         out.print(EMPTY);
         setBlack();
     }
-    private static String getPieceCode(ChessPiece piece){
+    private String getPieceCode(ChessPiece piece){
         if(piece == null){
             return EMPTY_BIG;
         }
@@ -119,7 +119,7 @@ public class ScreenDrawing {
             }
         }
     }
-    private static void printEdge(boolean flipBoard){
+    private void printEdge(boolean flipBoard){
         int rowStart = flipBoard ? 8 : -1;
         int rowEnd = flipBoard ? -1 : 8;
         int rowStep = flipBoard ? -1 : 1;
@@ -132,7 +132,7 @@ public class ScreenDrawing {
             out.print("\n");
         }
     }
-    private static void printEdgeBox(int row, int col, boolean blankRow, boolean flipBoard){
+    private void printEdgeBox(int row, int col, boolean blankRow, boolean flipBoard){
         setGreyType();
         out.print(EMPTY);
         if(!blankRow){
@@ -159,29 +159,29 @@ public class ScreenDrawing {
     }
 
     // Basic drawing functions
-    private static void setType(){
+    private void setType(){
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_WHITE);
     }
-    private static void setBlueType(){
+    private void setBlueType(){
         out.print(SET_BG_COLOR_BLUE);
         out.print(SET_TEXT_COLOR_BLACK);
     }
-    private static void setGreyType(){
+    private void setGreyType(){
         out.print(SET_BG_COLOR_DARK_GREY);
         out.print(SET_TEXT_COLOR_LIGHT_GREY);
     }
-    private static void setWhiteType(){
+    private void setWhiteType(){
         out.print(SET_BG_COLOR_WHITE);
         out.print(SET_TEXT_COLOR_BLACK);
     }
-    private static void setBold(){
+    private void setBold(){
         out.print(SET_TEXT_BOLD);
     }
-    private static void setRegular(){
+    private void setRegular(){
         out.print(RESET_TEXT_BOLD_FAINT);
     }
-    private static void setBlack(){
+    private void setBlack(){
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_BLACK);
     }
