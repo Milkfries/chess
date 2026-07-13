@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPosition;
 import chess.ChessGame.TeamColor;
 import model.GameData;
@@ -393,12 +394,24 @@ public class Client implements ServerMessageObserver{
         screenDraw.drawGame(currentGame,currentColor);
     }
     private void makeMove(String startPositionString, String endPositionString){
+        try{
+            ChessPosition startPosition = createChessPosition(startPositionString);
+            ChessPosition endPosition = createChessPosition(endPositionString);
+            ChessMove chessMove = new ChessMove(startPosition, endPosition);
+            websocket.makeMove(currentAuthToken,currentGame.gameID(),chessMove);
+            // TODO implement make move actions
+        }
+        catch(Exception e){
+            out.print("-- FAILED TO MAKE MOVE --\n- ");
+            out.print(e.getMessage());
+            out.print(" -\n");
+        }
         
     }
     private void showMoves(String piecePositionString){
         try{
             ChessPosition piecePosition = createChessPosition(piecePositionString);
-            System.out.println(piecePosition);
+            // call get moves from chess directly, no call to websocket
         }
         catch (Exception e){
             out.print("-- FAILED TO SHOW MOVES --\n- ");
