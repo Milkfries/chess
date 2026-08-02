@@ -44,7 +44,6 @@ public class Client implements ServerMessageObserver{
     public Client(String[] args) {
         String port = args.length >= 1 ? args[0] : "8080";
         initServer(port);
-        run();
     }
     public void run(){
         initVariables();
@@ -230,7 +229,7 @@ public class Client implements ServerMessageObserver{
     }
     private void notRecognized() {
         out.print("""
-                  This command was not recognized, please try again.
+                  This command was not recognized, type help to see commands.
 
                 """);
     }
