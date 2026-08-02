@@ -49,6 +49,9 @@ public class ScreenDrawing {
         int rowStart = flipBoard ? 1 : 8;
         int rowEnd = flipBoard ? 8 : 1;
         int rowStep = flipBoard ? 1 : -1;
+        int colStart = flipBoard ? 8 : 1;
+        int colEnd = flipBoard ? 1 : 8;
+        int colStep = flipBoard ? -1 : 1;
         ChessPosition currentPosition = null;
         ChessMove potentialMove = null;
         String hightlightColor = null;
@@ -63,7 +66,7 @@ public class ScreenDrawing {
             for(int space = 0; space < 3; space++){
                 boolean blankRow = space != 1 ? true : false;
                 printEdgeBox(row, row, blankRow, flipBoard);
-                for(int col = 1; col < 9; col++){
+                for(int col = colStart; flipBoard ? (col >= colEnd) : (col <= colEnd); col+=colStep){
                     if(possibleMoves != null){
                         potentialMove = new ChessMove(currentPosition,new ChessPosition(row,col));
                         if(possibleMoves.contains(potentialMove)){
