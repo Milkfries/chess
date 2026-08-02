@@ -1,8 +1,6 @@
 package server;
 
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.core.WebSocketComponents;
-
 import com.google.gson.Gson;
 
 import chess.ChessMove;
@@ -39,7 +37,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     @Override
     public void handleMessage(WsMessageContext ctx) throws Exception{
         UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
-
         switch (command.getCommandType()){
             case CONNECT:
                 connect(command, ctx.session);

@@ -5,6 +5,7 @@ import ui.ScreenDrawing;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -27,7 +28,8 @@ public class Client implements ServerMessageObserver{
     private ChessGame.TeamColor currentColor;
     private String currentAuthToken;
     private GameData currentGame;
-    private HashMap<Integer,Integer> cachedGames;
+    private int currentGameID;
+    private HashMap<Integer,GameData> cachedGames;
     private PrintStream out;
     private Scanner scanner;
     private ScreenDrawing screenDraw;
@@ -319,7 +321,7 @@ public class Client implements ServerMessageObserver{
                 }
                 out.print("}\n");
 
-                cachedGames.put(gameNumber,game.gameID());
+                cachedGames.put(gameNumber,game);
                 gameNumber++;
             }
             out.println("------------------");
@@ -330,7 +332,7 @@ public class Client implements ServerMessageObserver{
             out.print(" -\n");
         }
     }
-    private void joinGame(String gameIDString, String color){
+    private void joinGame(String gameNumberString, String color){
         TeamColor tempColor;
         try{
             if(color.equals("white")){
@@ -344,8 +346,10 @@ public class Client implements ServerMessageObserver{
             }
             
             int gameID = 0;
+            GameData game = null;
             try{
-                gameID = Integer.parseInt(gameIDString);
+                game = cachedGames.get(Integer.parseInt(gameNumberString));
+                gameID = game.gameID();
             }
             catch(Exception e){
                 throw new Exception("Error: GameID must be an integer");
@@ -355,6 +359,9 @@ public class Client implements ServerMessageObserver{
                 serverFacade.joinGame(request);
                 currentState = ClientState.GAMEPLAY;
                 currentColor = tempColor;
+                currentGame = game;
+                currentGameID = gameID;
+                screenDraw.drawGame(currentGame, currentColor);
                 initGameplay();
             }
             else{
@@ -362,7 +369,7 @@ public class Client implements ServerMessageObserver{
             }
         }
         catch(Exception e){
-            out.print("-- FAILED TO REGISTER --\n- ");
+            out.print("-- FAILED TO JOIN GAME --\n- ");
             out.print(e.getMessage());
             out.print(" -\n");
         }
@@ -385,7 +392,7 @@ public class Client implements ServerMessageObserver{
             }
         }
         catch(Exception e){
-            out.print("-- FAILED TO REGISTER --\n- ");
+            out.print("-- FAILED TO OBSERVE GAME --\n- ");
             out.print(e.getMessage());
             out.print(" -\n");
         }
@@ -411,6 +418,9 @@ public class Client implements ServerMessageObserver{
     private void showMoves(String piecePositionString){
         try{
             ChessPosition piecePosition = createChessPosition(piecePositionString);
+            Collection<ChessMove> possibleMoves = currentGame.game().possibleMoves(piecePosition);
+            possibleMoves.add(new ChessMove(piecePosition, null));
+            screenDraw.drawGame(currentGame,currentColor, possibleMoves);
             // call get moves from chess directly, no call to websocket
         }
         catch (Exception e){

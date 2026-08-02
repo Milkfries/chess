@@ -3,6 +3,7 @@ package ui;
 import static ui.EscapeSequences.*;
 
 import java.io.PrintStream;
+import java.util.Collection;
 
 import chess.*;
 import chess.ChessGame.TeamColor;
@@ -29,13 +30,32 @@ public class ScreenDrawing {
         out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
         out.print("\n");
         setBlack();
-        drawChessBoard(game.game(),color == TeamColor.WHITE ? false : true);
+        drawChessBoard(game.game(),color == TeamColor.WHITE ? false : true, null);
         setType();
     }
-    private void drawChessBoard(ChessGame game, boolean flipBoard){// Printing
+    public void drawGame(GameData game, ChessGame.TeamColor color, Collection<ChessMove> possibleMoves){
+        clearScreen();
+        setType();
+        out.print("Chess Game: " + game.gameName() + "\n\n");
+        out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
+        out.print("\n");
+        setBlack();
+        drawChessBoard(game.game(),color == TeamColor.WHITE ? false : true, possibleMoves);
+
+        
+        setType();
+    }
+    private void drawChessBoard(ChessGame game, boolean flipBoard, Collection<ChessMove> possibleMoves){// Printing
         int rowStart = flipBoard ? 1 : 8;
         int rowEnd = flipBoard ? 8 : 1;
         int rowStep = flipBoard ? 1 : -1;
+        ChessPosition currentPosition = null;
+        ChessMove potentialMove = null;
+        String hightlightColor = null;
+
+        if(possibleMoves != null){
+            currentPosition = possibleMoves.iterator().next().getStartPosition();
+        }
 
         printEdge(flipBoard);
         // Flips the direction it reads board if from black's perspective
@@ -43,8 +63,20 @@ public class ScreenDrawing {
             for(int space = 0; space < 3; space++){
                 boolean blankRow = space != 1 ? true : false;
                 printEdgeBox(row, row, blankRow, flipBoard);
-                for(int col = 8; col > 0; col--){
-                    printPiece(game, row, col,blankRow);
+                for(int col = 1; col < 9; col++){
+                    if(possibleMoves != null){
+                        potentialMove = new ChessMove(currentPosition,new ChessPosition(row,col));
+                        if(possibleMoves.contains(potentialMove)){
+                            hightlightColor = SET_BG_COLOR_GREEN;
+                        }
+                        else if(possibleMoves.contains(new ChessMove(new ChessPosition(row, col),null))){
+                            hightlightColor = SET_BG_COLOR_YELLOW;
+                        }
+                        else{
+                            hightlightColor = null;
+                        }
+                    }
+                    printPiece(game, row, col, blankRow, hightlightColor);
                 }
                 printEdgeBox(row, 0, blankRow, flipBoard);
                 out.print("\n");
@@ -54,16 +86,27 @@ public class ScreenDrawing {
 
         setType();
     }
-    private void printPiece(ChessGame game, int row, int col, boolean blankRow){
+    private void printPiece(ChessGame game, int row, int col, boolean blankRow, String highlightColor){
         ChessBoard board = game.getBoard();
         ChessPosition position = new ChessPosition(row, col);
-        ChessPiece piece = board.getPiece(position);
-
+        ChessPiece piece = board.getPiece(position);  
         if((row+col) % 2 == 1){ // determine if the square should be white or black
             setWhiteType();
+            if(highlightColor == SET_BG_COLOR_GREEN){
+                setHighlight(SET_BG_COLOR_LIGHT_GREEN);
+            }
+            else if(highlightColor != null){
+                setHighlight(highlightColor);
+            }
         }
         else{
             setBlueType();
+            if(highlightColor == SET_BG_COLOR_GREEN){
+                setHighlight(SET_BG_COLOR_DARKER_GREEN);
+            }
+            else if(highlightColor != null){
+                setHighlight(highlightColor);
+            }
         }
         out.print(EMPTY);
         if(blankRow){
@@ -173,6 +216,10 @@ public class ScreenDrawing {
     }
     private void setWhiteType(){
         out.print(SET_BG_COLOR_WHITE);
+        out.print(SET_TEXT_COLOR_BLACK);
+    }
+    private void setHighlight(String color){
+        out.print(color);
         out.print(SET_TEXT_COLOR_BLACK);
     }
     private void setBold(){
