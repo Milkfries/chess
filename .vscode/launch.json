@@ -24,7 +24,8 @@
             "mainClass": "client.ClientMain",
             "projectName": "client",
             "args": [
-                "8080"
+                "8080",
+                "localhost"
             ]
         },
         {
