@@ -10,10 +10,12 @@ import io.javalin.websocket.WsConnectContext;
 import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
+import model.GameData;
 import service.GameService;
 import service.UserService;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 import websocket.messages.ServerMessage.ServerMessageType;
 
@@ -62,9 +64,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void connect(UserGameCommand command, Session session) throws Exception{
         System.out.println("Connect");
-        connections.add(session);
+        connections.add(command.getGameID(), command.getAuthToken(), session);
         ServerMessage msg = new ServerMessage(ServerMessageType.NOTIFICATION);
-        connections.broadcast(session, msg);
+        connections.broadcast(command.getGameID(),session, msg,false);
     }
 
     private void makeMove(MakeMoveCommand command, Session session) throws Exception{
@@ -73,21 +75,27 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         String authToken = command.getAuthToken();
 
         System.out.println("Make move called \nGame ID: " + Integer.toString(gameID) +  "\nMove: " + move.toString() + "\nauthToken: " + authToken);
-
-        ServerMessage msg = new ServerMessage(ServerMessageType.LOAD_GAME);
-        connections.broadcast(session, msg);
+        
+        // Verify move
+        // Make move in game
+        // Load Game in all connected games
+        // Notify all connected games minus caller
+        
+        GameData updatedGameData = new GameData();
+        ServerMessage msg = new LoadGameMessage(updatedGameData);
+        connections.broadcast(updatedGameData.gameID(),session,msg,true);
     }
 
     private void leave(UserGameCommand command, Session session) throws Exception{
-        System.out.println("Leave");
-        connections.remove(session);
+        // System.out.println("Leave");
+        // connections.remove(session);
 
-        ServerMessage msg = new ServerMessage(ServerMessageType.ERROR);
-        connections.broadcast(session, msg);
+        // ServerMessage msg = new ServerMessage(ServerMessageType.ERROR);
+        // connections.broadcast(session, msg);
     }
 
     private void resign(UserGameCommand command, Session session){
-        System.out.println("Resign");
-        connections.remove(session);
+        // System.out.println("Resign");
+        // connections.remove(session);
     }
 }
