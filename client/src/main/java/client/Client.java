@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import com.google.gson.Gson;
+
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
@@ -16,13 +18,16 @@ import chess.ChessGame.TeamColor;
 import model.GameData;
 import request.*;
 import result.*;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
+import websocket.messages.ServerMessage.ServerMessageType;
 
 
 public class Client implements ServerMessageObserver{
     private ServerFacade serverFacade;
     private WebsocketCommunicator websocket;
-
+    private String port;
+    private String hostName;
     private String currentUser;
     private ClientState currentState;
     private ChessGame.TeamColor currentColor;
@@ -33,6 +38,7 @@ public class Client implements ServerMessageObserver{
     private PrintStream out;
     private Scanner scanner;
     private ScreenDrawing screenDraw;
+    private Gson serializer;
 
 
     private enum ClientState {
@@ -41,23 +47,34 @@ public class Client implements ServerMessageObserver{
         GAMEPLAY,
         QUIT
     }
-    public Client(String[] args) {
-        String port = args.length >= 1 ? args[0] : "8080";
-        initServer(port);
+    public Client(String hostName, String port) {
+        this.port = port;
+        this.hostName = hostName;
+        initVariables();
+        initServer();
     }
     public void run(){
-        initVariables();
-        screenDraw = new ScreenDrawing(out);
         mainLoop();
     }
     private void initVariables(){
+        this.serializer = new Gson();
         out = new PrintStream(System.out, true, StandardCharsets.UTF_16);
+        screenDraw = new ScreenDrawing(out);
         scanner = new Scanner(System.in);
         cachedGames = new HashMap<>();
     }
-    private void initServer(String port){
-        serverFacade = new ServerFacade("localhost", Integer.parseInt(port));
-        websocket = new WebsocketCommunicator("localhost", this);
+    private void initServer(){
+
+        serverFacade = new ServerFacade(hostName, Integer.parseInt(port));
+        try{
+            websocket = new WebsocketCommunicator(hostName, port, this);
+        }
+        catch(Exception e){
+            out.print("  -- Websocket Error --\n  - ");
+            out.print(e.getMessage());
+            out.print(" -\n");
+        }
+        
     }
 
     public void mainLoop(){
@@ -404,6 +421,7 @@ public class Client implements ServerMessageObserver{
             ChessPosition startPosition = createChessPosition(startPositionString);
             ChessPosition endPosition = createChessPosition(endPositionString);
             ChessMove chessMove = new ChessMove(startPosition, endPosition);
+            out.print(chessMove);
             websocket.makeMove(currentAuthToken,currentGame.gameID(),chessMove);
             // TODO implement make move actions
         }
@@ -468,7 +486,13 @@ public class Client implements ServerMessageObserver{
         }
     }
     @Override
-    public void notify(ServerMessage msg){
+    public void notify(String msg){
+        ServerMessage notification = serializer.fromJson(msg, ServerMessage.class);
 
+        ServerMessageType messageType = notification.getServerMessageType();
+        if(messageType.equals(ServerMessageType.LOAD_GAME)){
+            LoadGameMessage loadGameMessage = serializer.fromJson(msg, LoadGameMessage.class);
+            currentGame = loadGameMessage.getGameData();
+        }
     }
 }
