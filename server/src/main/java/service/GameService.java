@@ -1,6 +1,8 @@
 package service;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import dataaccess.*;
 import model.*;
 import request.*;
@@ -108,6 +110,12 @@ public class GameService {
             gameDAO.updateGame(newGame);
         } 
     }
-    
+    public GameData updateGame(int gameID, ChessMove move) throws DataAccessException, InvalidMoveException{
+        // TODO verify turn is correct
+        GameData gameData = gameDAO.getGame(gameID);
+        gameData.game().makeMove(move);
+        gameDAO.updateGame(gameData);
+        return gameData;
+    }
 
 }
