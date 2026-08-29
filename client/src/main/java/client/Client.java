@@ -18,6 +18,9 @@ import chess.ChessGame.TeamColor;
 import model.GameData;
 import request.*;
 import result.*;
+import websocket.commands.MakeMoveCommand;
+import websocket.commands.UserGameCommand;
+import websocket.commands.UserGameCommand.CommandType;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 import websocket.messages.ServerMessage.ServerMessageType;
@@ -25,7 +28,6 @@ import websocket.messages.ServerMessage.ServerMessageType;
 
 public class Client implements ServerMessageObserver{
     private ServerFacade serverFacade;
-    private WebsocketCommunicator websocket;
     private String port;
     private String hostName;
     private String currentUser;
@@ -33,7 +35,6 @@ public class Client implements ServerMessageObserver{
     private ChessGame.TeamColor currentColor;
     private String currentAuthToken;
     private GameData currentGame;
-    private int currentGameID;
     private HashMap<Integer,GameData> cachedGames;
     private PrintStream out;
     private Scanner scanner;
@@ -57,26 +58,26 @@ public class Client implements ServerMessageObserver{
         mainLoop();
     }
     private void initVariables(){
-        this.serializer = new Gson();
+        serializer = new Gson();
         out = new PrintStream(System.out, true, StandardCharsets.UTF_16);
         screenDraw = new ScreenDrawing(out);
         scanner = new Scanner(System.in);
         cachedGames = new HashMap<>();
     }
     private void initServer(){
-
-        serverFacade = new ServerFacade(hostName, Integer.parseInt(port));
         try{
-            websocket = new WebsocketCommunicator(hostName, port, this);
+            serverFacade = new ServerFacade(hostName, Integer.parseInt(port),this);
         }
         catch(Exception e){
-            out.print("  -- Websocket Error --\n  - ");
+            out.print("  -- Connection Error --\n  - ");
             out.print(e.getMessage());
             out.print(" -\n");
+            out.print("Press enter to try again");
+            scanner.nextLine();
+            initServer();
         }
-        
-    }
 
+    }
     public void mainLoop(){
         currentState = ClientState.PRELOGIN;
         currentGame = null;
@@ -179,10 +180,14 @@ public class Client implements ServerMessageObserver{
         else if(command[0].equals("redraw") && commandCount == 1){
             redrawBoard();
         }
-        else if(command[0].equals("move") && commandCount == 3){
+        else if(command[0].equals("move") && commandCount == 3 || commandCount == 4){
             String startPosition = command[1];
             String endPosition = command[2];
-            makeMove(startPosition,endPosition);
+            String promotionPiece = null;
+            if(commandCount == 4){
+                promotionPiece = command[3];
+            }
+            makeMove(startPosition,endPosition,promotionPiece);
         }
         else if(command[0].equals("show") && commandCount == 2){
             String piecePosition = command[1];
@@ -376,7 +381,6 @@ public class Client implements ServerMessageObserver{
                 currentState = ClientState.GAMEPLAY;
                 currentColor = tempColor;
                 currentGame = game;
-                currentGameID = gameID;
                 screenDraw.drawGame(currentGame, currentColor);
                 initGameplay();
             }
@@ -400,6 +404,7 @@ public class Client implements ServerMessageObserver{
                 throw new Exception("Error: GameID must be an integer");
             }
             if(cachedGames.containsKey(gameID)){
+                // TODO finish implementing observe
                 // currentState = ClientState.GAMEPLAY;
                 screenDraw.drawGame(currentGame,TeamColor.WHITE);
             }
@@ -416,29 +421,24 @@ public class Client implements ServerMessageObserver{
     private void redrawBoard(){
         screenDraw.drawGame(currentGame,currentColor);
     }
-    private void makeMove(String startPositionString, String endPositionString){
+    private void makeMove(String startPosition, String endPosition, String promotionPiece){
         try{
-            ChessPosition startPosition = createChessPosition(startPositionString);
-            ChessPosition endPosition = createChessPosition(endPositionString);
-            ChessMove chessMove = new ChessMove(startPosition, endPosition);
-            out.print(chessMove);
-            websocket.makeMove(currentAuthToken,currentGame.gameID(),chessMove);
-            // TODO implement make move actions
+            MakeMoveCommand command = new MakeMoveCommand(currentAuthToken,currentGame.gameID(),startPosition,endPosition, promotionPiece);
+            serverFacade.makeMove(command);
         }
         catch(Exception e){
             out.print("-- FAILED TO MAKE MOVE --\n- ");
             out.print(e.getMessage());
             out.print(" -\n");
         }
-        
     }
     private void showMoves(String piecePositionString){
+        // calculate moves locally, no call to server
         try{
             ChessPosition piecePosition = createChessPosition(piecePositionString);
             Collection<ChessMove> possibleMoves = currentGame.game().possibleMoves(piecePosition);
             possibleMoves.add(new ChessMove(piecePosition, null));
             screenDraw.drawGame(currentGame,currentColor, possibleMoves);
-            // call get moves from chess directly, no call to websocket
         }
         catch (Exception e){
             out.print("-- FAILED TO SHOW MOVES --\n- ");
@@ -449,8 +449,17 @@ public class Client implements ServerMessageObserver{
     }
     private void resignGame(){
         try{
-            websocket.resign(currentAuthToken,currentGame.gameID());
-            // TODO implement resign actions (screen saying you lost? idk)
+            UserGameCommand command = new UserGameCommand(CommandType.RESIGN,currentAuthToken,currentGame.gameID());
+            serverFacade.resignGame(command);
+            screenDraw.clearScreen();
+            out.print("You resigned\n\n");
+            // TODO implement resign actions (results type of screen?)
+            out.print("Press enter to continue: ");
+            scanner.nextLine();
+            screenDraw.clearScreen();
+            currentGame = null;
+            currentColor = null;
+            currentState = ClientState.POSTLOGIN;
         }
         catch(Exception e){
             out.print("-- FAILED TO RESIGN --\n- ");
@@ -460,7 +469,13 @@ public class Client implements ServerMessageObserver{
     }
     private void leaveGame(){
         try{
-            websocket.leave(currentAuthToken, currentGame.gameID());
+            UserGameCommand command = new UserGameCommand(CommandType.RESIGN,currentAuthToken,currentGame.gameID());
+            serverFacade.leaveGame(command);
+            screenDraw.clearScreen();
+            out.print("You left the game, you can rejoin anytime\n");
+            out.print("Press enter to continue: ");
+            scanner.nextLine();
+            screenDraw.clearScreen();
             currentGame = null;
             currentColor = null;
             currentState = ClientState.POSTLOGIN;
@@ -487,12 +502,17 @@ public class Client implements ServerMessageObserver{
     }
     @Override
     public void notify(String msg){
+        out.print("message recieved!");
+        out.print(msg);
+
         ServerMessage notification = serializer.fromJson(msg, ServerMessage.class);
 
         ServerMessageType messageType = notification.getServerMessageType();
         if(messageType.equals(ServerMessageType.LOAD_GAME)){
+            out.print("Load game");
             LoadGameMessage loadGameMessage = serializer.fromJson(msg, LoadGameMessage.class);
             currentGame = loadGameMessage.getGameData();
+            redrawBoard();
         }
     }
 }

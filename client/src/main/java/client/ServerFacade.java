@@ -11,16 +11,21 @@ import com.google.gson.Gson;
 
 import request.*;
 import result.*;
+import websocket.commands.MakeMoveCommand;
+import websocket.commands.UserGameCommand;
 
 public class ServerFacade {
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private String host;
     private int port;
     private Gson serializer;
-    public ServerFacade(String host, int port){
+    private WebsocketCommunicator ws;
+
+    public ServerFacade(String host, int port, ServerMessageObserver client)throws Exception{
         this.host = host;
         this.port = port;
         this.serializer = new Gson();
+        this.ws = new WebsocketCommunicator(host, port, client);
     }
     public RegisterResult register(RegisterRequest registerRequest) throws Exception{
         try{
@@ -97,6 +102,19 @@ public class ServerFacade {
         catch (Exception e){
             throw new Exception(getErrorMessage(e));
         }
+    }
+    public void observeGame() throws Exception{
+        //TODO implement observing a game
+    }
+    public void makeMove(MakeMoveCommand command) throws Exception{
+        // TODO check exceptiosn from ws and possibly format them
+        ws.sendRequest(command);
+    }
+    public void resignGame(UserGameCommand command) throws Exception{
+        ws.sendRequest(command);
+    }
+    public void leaveGame(UserGameCommand command) throws Exception{
+        ws.sendRequest(command);
     }
     public void clear() throws Exception{
         //to clear - DELETE /db
