@@ -1,24 +1,29 @@
 package websocket.commands;
 
-import chess.ChessMove;
-
 public class MakeMoveCommand extends UserGameCommand{
-    private ChessMove move;
+    private String startPosition;
+    private String endPosition;
 
-    public MakeMoveCommand(String authToken, Integer gameID, ChessMove move) {
+    public MakeMoveCommand(String authToken, Integer gameID, String startPosition, String endPosition) {
         super(CommandType.MAKE_MOVE, authToken,gameID);
-        this.move = move;
+        this.startPosition = startPosition;
+        this.endPosition = endPosition;
     }
 
-    public ChessMove getChessMove(){
-        return move;
+    public String getStartPosition(){
+        return startPosition;
     }
+    public String getEndPosition(){
+        return endPosition;
+    }
+
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((move == null) ? 0 : move.hashCode());
+        result = prime * result + ((startPosition == null) ? 0 : startPosition.hashCode());
+        result = prime * result + ((endPosition == null) ? 0 : endPosition.hashCode());
         return result;
     }
 
@@ -33,12 +38,19 @@ public class MakeMoveCommand extends UserGameCommand{
         if (getClass() != obj.getClass())
             return false;
         MakeMoveCommand other = (MakeMoveCommand) obj;
-        if (move == null) {
-            if (other.move != null)
+        if (startPosition == null) {
+            if (other.startPosition != null)
                 return false;
-        } else if (!move.equals(other.move))
+        } else if (!startPosition.equals(other.startPosition))
+            return false;
+        if (endPosition == null) {
+            if (other.endPosition != null)
+                return false;
+        } else if (!endPosition.equals(other.endPosition))
             return false;
         return true;
     }
+
+    
 
 }
