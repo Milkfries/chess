@@ -23,6 +23,8 @@ public class ChessPosition {
         if (!(row >= 1 && row <= 8 && col >= 1 && col <= 8)){
             throw new Exception("Error: Not a valid position");
         }
+        this.row = row;
+        this.col = col;
     }
     /**
      * @return which row this position is in
