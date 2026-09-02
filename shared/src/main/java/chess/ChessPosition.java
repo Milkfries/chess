@@ -14,7 +14,16 @@ public class ChessPosition {
         this.row = row;
         this.col = col;
     }
-
+    public ChessPosition(String positionString) throws Exception{
+        if(positionString.length() != 2){
+            throw new Exception("Error: Not a valid position");
+        }
+        int row = (int) positionString.charAt(1) - '0'; 
+        int col = (int) positionString.charAt(0) - 'a' + 1;
+        if (!(row >= 1 && row <= 8 && col >= 1 && col <= 8)){
+            throw new Exception("Error: Not a valid position");
+        }
+    }
     /**
      * @return which row this position is in
      * 1 codes for the bottom row
