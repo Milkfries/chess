@@ -14,9 +14,11 @@ import chess.ChessPiece.PieceType;
 public class ChessGame {
     private TeamColor teamTurn;
     private ChessBoard board;
+    private TeamColor winner;
 
     public ChessGame() {
         teamTurn = TeamColor.WHITE;
+        winner = null;
         board = new ChessBoard();
         board.resetBoard();
     }
@@ -100,7 +102,6 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-
         ChessPosition startPosition = move.getStartPosition();
         ChessPiece piece = board.getPiece(startPosition);
 
@@ -290,7 +291,9 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return board;
     }
-
+    public void winGame(TeamColor teamColor){
+        winner = teamColor;
+    }
     @Override
     public int hashCode() {
         final int prime = 31;

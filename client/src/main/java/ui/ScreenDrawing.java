@@ -28,10 +28,17 @@ public class ScreenDrawing {
         setType();
         out.print("Chess Game: " + game.gameName() + "\n\n");
         out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
-        out.print("\n");
+        out.print("\n\n");
+        if (game.game().getTeamTurn() == TeamColor.WHITE){
+            out.print("WHITE TO PLAY\n");
+        }
+        else{
+            out.print("BLACK TO PLAY\n\n");
+        }
         setBlack();
         drawChessBoard(game.game(),color == TeamColor.WHITE ? false : true, null);
         setType();
+        out.print("\n\n");
     }
     public void drawGame(GameData game, ChessGame.TeamColor color, Collection<ChessMove> possibleMoves){
         clearScreen();

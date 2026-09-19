@@ -13,6 +13,7 @@ import request.*;
 import result.*;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.commands.UserGameCommand.CommandType;
 
 public class ServerFacade {
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
@@ -21,11 +22,14 @@ public class ServerFacade {
     private Gson serializer;
     private WebsocketCommunicator ws;
 
-    public ServerFacade(String host, int port, ServerMessageObserver client)throws Exception{
+    public ServerFacade(String host, int port){
         this.host = host;
         this.port = port;
         this.serializer = new Gson();
-        this.ws = new WebsocketCommunicator(host, port, client);
+        
+    }
+    public void initWebsocket(ServerMessageObserver observer) throws Exception{
+        this.ws = new WebsocketCommunicator(host, port, observer);
     }
     public RegisterResult register(RegisterRequest registerRequest) throws Exception{
         try{
@@ -98,6 +102,8 @@ public class ServerFacade {
             if(httpResponse.statusCode() != 200){
                 throw new Exception(httpResponse.body());
             }
+            UserGameCommand command = new UserGameCommand(CommandType.CONNECT, joinGameRequest.authToken(), joinGameRequest.gameID());
+            ws.sendRequest(command);
         }
         catch (Exception e){
             throw new Exception(getErrorMessage(e));

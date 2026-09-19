@@ -19,22 +19,33 @@ public class ConnectionManager {
         gameConnections.put(authToken,session);
         connections.put(gameID, gameConnections);
     }
+    public enum BroadcastType{
+        ONLY_SELF,
+        ALL_OTHERS,
+        ALL,
+    }
 
     public void remove(int gameID, String authToken) {
         connections.get(gameID).remove(authToken);
     }
 
-    public void broadcast(int gameID, Session currentSession, ServerMessage serverMsg, boolean includeCurrent) throws IOException {
+    public void broadcast(int gameID, Session currentSession, ServerMessage serverMsg, BroadcastType broadcastType) throws IOException {
         String msg = serializer.toJson(serverMsg);
         for (Session c : connections.get(gameID).values()) {
             if (c.isOpen()) {
-                if (!c.equals(currentSession)) {
-                    c.getRemote().sendString(msg);
+                if(broadcastType==BroadcastType.ONLY_SELF){
+                    if(c.equals(currentSession)){
+                        c.getRemote().sendString(msg);
+                    }
                 }
-                else if(includeCurrent){
-                    c.getRemote().sendString(msg);
+                else{
+                    if (!c.equals(currentSession)) {
+                        c.getRemote().sendString(msg);
+                    }
+                    else if(broadcastType == BroadcastType.ALL){
+                        c.getRemote().sendString(msg);
+                    }
                 }
-
             }
         }
     }

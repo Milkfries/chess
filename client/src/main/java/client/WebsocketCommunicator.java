@@ -17,7 +17,6 @@ import websocket.commands.UserGameCommand;
 import websocket.exceptions.ResponseException;
 
 public class WebsocketCommunicator extends Endpoint{
-    private ServerMessageObserver observer;
     private Session session;
     private Gson serializer;
 
@@ -26,7 +25,6 @@ public class WebsocketCommunicator extends Endpoint{
         try {
             String url = "ws://" + hostName + ":" + port + "/ws";
             URI socketURI = new URI(url);
-            this.observer = observer;
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);

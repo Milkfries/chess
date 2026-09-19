@@ -92,6 +92,9 @@ public class UserService {
 		// delete the auth token
 		authDAO.deleteAuth(authToken);
 	}
+	public AuthData getUserData(String authToken) throws DataAccessException{
+		return authDAO.getAuth(authToken);
+	}
 	private String hashPassword(String plainTestPassword){
 		return BCrypt.hashpw(plainTestPassword, BCrypt.gensalt());
 	}

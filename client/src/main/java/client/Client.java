@@ -66,7 +66,8 @@ public class Client implements ServerMessageObserver{
     }
     private void initServer(){
         try{
-            serverFacade = new ServerFacade(hostName, Integer.parseInt(port),this);
+            serverFacade = new ServerFacade(hostName, Integer.parseInt(port));
+            serverFacade.initWebsocket(this);
         }
         catch(Exception e){
             out.print("  -- Connection Error --\n  - ");
@@ -435,7 +436,7 @@ public class Client implements ServerMessageObserver{
     private void showMoves(String piecePositionString){
         // calculate moves locally, no call to server
         try{
-            ChessPosition piecePosition = createChessPosition(piecePositionString);
+            ChessPosition piecePosition = new ChessPosition(piecePositionString);
             Collection<ChessMove> possibleMoves = currentGame.game().possibleMoves(piecePosition);
             possibleMoves.add(new ChessMove(piecePosition, null));
             screenDraw.drawGame(currentGame,currentColor, possibleMoves);
@@ -487,24 +488,11 @@ public class Client implements ServerMessageObserver{
         }
     }
 
-    private ChessPosition createChessPosition(String positionString) throws Exception{
-        if(positionString.length() != 2){
-            throw new Exception("Error: Not a valid position");
-        }
-        int row = (int) positionString.charAt(1) - '0'; 
-        int col = (int) positionString.charAt(0) - 'a' + 1;
-        if (row >= 1 && row <= 8 && row >= 1 && row <= 8){
-            return new ChessPosition(row, col);
-        }
-        else{
-            throw new Exception("Error: Not a valid position");
-        }
-    }
+    
     @Override
     public void notify(String msg){
         out.print("message recieved!");
         out.print(msg);
-
         ServerMessage notification = serializer.fromJson(msg, ServerMessage.class);
 
         ServerMessageType messageType = notification.getServerMessageType();
@@ -513,6 +501,7 @@ public class Client implements ServerMessageObserver{
             LoadGameMessage loadGameMessage = serializer.fromJson(msg, LoadGameMessage.class);
             currentGame = loadGameMessage.getGameData();
             redrawBoard();
+            out.print("[" + currentUser + "] >> ");
         }
     }
 }

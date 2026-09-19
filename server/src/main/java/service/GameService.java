@@ -56,7 +56,7 @@ public class GameService {
         String authToken = request.authToken();
         String teamColor = request.playerColor();
         int gameID = request.gameID();
-        boolean createNewGame = true;
+
 
         AuthData authData = authDAO.getAuth(authToken);
 
@@ -84,19 +84,14 @@ public class GameService {
             if(whiteUsername == null){
                 whiteUsername = authData.username();
             }
-            else if(whiteUsername.equals(authData.username())){
-                createNewGame = false;
-            }
             else{
                 throw new AlreadyTakenException("Error: already taken");
             }
+            
         }
         else if(teamColor.toUpperCase().equals("BLACK")){
             if(blackUsername == null){
                 blackUsername = authData.username();
-            }
-            else if(blackUsername.equals(authData.username())){
-                createNewGame = false;
             }
             else{
                 throw new AlreadyTakenException("Error: already taken");
@@ -105,17 +100,20 @@ public class GameService {
         else{
             throw new BadRequestException("Error: bad request");
         }
-        if(createNewGame){
-            GameData newGame = new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame);
-            gameDAO.updateGame(newGame);
-        } 
+
+        GameData newGame = new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame);
+
+        gameDAO.updateGame(newGame);
     }
     public GameData updateGame(int gameID, ChessMove move) throws DataAccessException, InvalidMoveException{
-        // TODO verify turn is correct
         GameData gameData = gameDAO.getGame(gameID);
         gameData.game().makeMove(move);
         gameDAO.updateGame(gameData);
         return gameData;
     }
+    // public GameData resignGame(int gameID, String authToken) throws DataAccessException{
+    //     GameData gameData = gameDAO.getGame(gameID);
+    //     // gameData.game().
+    // }
 
 }
