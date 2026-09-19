@@ -318,13 +318,11 @@ public class StandardAPITests {
         serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.BLACK, game1.getGameID()), authA.getAuthToken());
         expectedList[0] = new TestListEntry(game1.getGameID(), game1Name, null, authA.getUsername());
 
-
         //1 as white from B
         String game2Name = "Lonely";
         TestCreateResult game2 = serverFacade.createGame(new TestCreateRequest(game2Name), authB.getAuthToken());
         serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.WHITE, game2.getGameID()), authB.getAuthToken());
         expectedList[1] = new TestListEntry(game2.getGameID(), game2Name, authB.getUsername(), null);
-
 
         //1 of each from C
         String game3Name = "GG";
@@ -333,14 +331,12 @@ public class StandardAPITests {
         serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.BLACK, game3.getGameID()), authA.getAuthToken());
         expectedList[2] = new TestListEntry(game3.getGameID(), game3Name, authC.getUsername(), authA.getUsername());
 
-
         //C play self
         String game4Name = "All by myself";
         TestCreateResult game4 = serverFacade.createGame(new TestCreateRequest(game4Name), authC.getAuthToken());
         serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.WHITE, game4.getGameID()), authC.getAuthToken());
         serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.BLACK, game4.getGameID()), authC.getAuthToken());
         expectedList[3] = new TestListEntry(game4.getGameID(), game4Name, authC.getUsername(), authC.getUsername());
-
 
         //list games
         TestListResult listResult = serverFacade.listGames(existingAuth);
@@ -390,15 +386,12 @@ public class StandardAPITests {
         TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
         assertHttpOk(createResult);
 
-
         TestResult logoutResult = serverFacade.logout(existingAuth);
         assertHttpOk(logoutResult);
-
 
         TestJoinRequest joinRequest = new TestJoinRequest(ChessGame.TeamColor.WHITE, createResult.getGameID());
         TestResult joinResult = serverFacade.joinPlayer(joinRequest, loginOne.getAuthToken());
         assertHttpOk(joinResult);
-
 
         TestListResult listResult = serverFacade.listGames(loginTwo.getAuthToken());
         assertHttpOk(listResult);
@@ -472,7 +465,6 @@ public class StandardAPITests {
     }
 
     // ### HELPER ASSERTIONS ###
-
     private void assertHttpOk(TestResult result) {
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
                 "Server response code was not 200 OK (message: %s)".formatted(result.getMessage()));
@@ -505,5 +497,4 @@ public class StandardAPITests {
         Assertions.assertNull(result.getUsername(), "Response incorrectly returned username");
         Assertions.assertNull(result.getAuthToken(), "Response incorrectly return authentication String");
     }
-
 }
