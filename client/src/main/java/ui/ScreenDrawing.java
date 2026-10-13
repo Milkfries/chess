@@ -24,33 +24,69 @@ public class ScreenDrawing {
     }
     //Chessboard Drawing
     public void drawGame(GameData game, ChessGame.TeamColor color){
-        clearScreen();
-        setType();
-        out.print("Chess Game: " + game.gameName() + "\n\n");
-        out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
-        out.print("\n\n");
-        if (game.game().getTeamTurn() == TeamColor.WHITE){
-            out.print("WHITE TO PLAY\n");
+        if(game.winner() == ChessGame.TeamColor.BLACK){
+            clearScreen();
+            setType();
+            out.print("GAME COMPLETED - WINNER: " + game.blackUsername());
+            out.print("Chess Game: " + game.gameName() + "\n\n");
+            out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
+            out.print("\n\n");
+        }
+        else if(game.winner() == ChessGame.TeamColor.BLACK){
+            clearScreen();
+            setType();
+            out.print("GAME COMPLETED - WINNER: " + game.whiteUsername());
+            out.print("Chess Game: " + game.gameName() + "\n\n");
+            out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
+            out.print("\n\n");
         }
         else{
-            out.print("BLACK TO PLAY\n\n");
+            clearScreen();
+            setType();
+            out.print("Chess Game: " + game.gameName() + "\n\n");
+            out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
+            out.print("\n\n");
+            if (game.game().getTeamTurn() == TeamColor.WHITE){
+                out.print("WHITE TO PLAY\n");
+            }
+            else{
+                out.print("BLACK TO PLAY\n\n");
+            }
+            setBlack();
+            drawChessBoard(game.game(),color == TeamColor.WHITE ? false : true, null);
+            setType();
+            out.print("\n\n");
         }
-        setBlack();
-        drawChessBoard(game.game(),color == TeamColor.WHITE ? false : true, null);
-        setType();
-        out.print("\n\n");
     }
     public void drawGame(GameData game, ChessGame.TeamColor color, Collection<ChessMove> possibleMoves){
-        clearScreen();
-        setType();
-        out.print("Chess Game: " + game.gameName() + "\n\n");
-        out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
-        out.print("\n");
-        setBlack();
-        drawChessBoard(game.game(),color == TeamColor.WHITE ? false : true, possibleMoves);
+        if(game.winner() == ChessGame.TeamColor.BLACK){
+            clearScreen();
+            setType();
+            out.print("GAME COMPLETED - WINNER: " + game.blackUsername());
+            out.print("Chess Game: " + game.gameName() + "\n\n");
+            out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
+            out.print("\n\n");
+        }
+        else if(game.winner() == ChessGame.TeamColor.BLACK){
+            clearScreen();
+            setType();
+            out.print("GAME COMPLETED - WINNER: " + game.whiteUsername());
+            out.print("Chess Game: " + game.gameName() + "\n\n");
+            out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
+            out.print("\n\n");
+        }
+        else{
+            clearScreen();
+            setType();
+            out.print("Chess Game: " + game.gameName() + "\n\n");
+            out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
+            out.print("\n");
+            setBlack();
+            drawChessBoard(game.game(),color == TeamColor.WHITE ? false : true, possibleMoves);
 
-        
-        setType();
+            
+            setType();
+        }
     }
     private void drawChessBoard(ChessGame game, boolean flipBoard, Collection<ChessMove> possibleMoves){// Printing
         int rowStart = flipBoard ? 1 : 8;
