@@ -24,7 +24,7 @@ public class ScreenDrawing {
     }
     //Chessboard Drawing
     public void drawGame(GameData game, ChessGame.TeamColor color){
-        if(game.winner() == ChessGame.TeamColor.BLACK){
+        if(game.game().getWinner() == ChessGame.TeamColor.BLACK){
             clearScreen();
             setType();
             out.print("GAME COMPLETED - WINNER: " + game.blackUsername());
@@ -32,7 +32,7 @@ public class ScreenDrawing {
             out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
             out.print("\n\n");
         }
-        else if(game.winner() == ChessGame.TeamColor.BLACK){
+        else if(game.game().getWinner() == ChessGame.TeamColor.WHITE){
             clearScreen();
             setType();
             out.print("GAME COMPLETED - WINNER: " + game.whiteUsername());
@@ -59,7 +59,7 @@ public class ScreenDrawing {
         }
     }
     public void drawGame(GameData game, ChessGame.TeamColor color, Collection<ChessMove> possibleMoves){
-        if(game.winner() == ChessGame.TeamColor.BLACK){
+        if(game.game().getWinner() == ChessGame.TeamColor.BLACK){
             clearScreen();
             setType();
             out.print("GAME COMPLETED - WINNER: " + game.blackUsername());
@@ -67,7 +67,7 @@ public class ScreenDrawing {
             out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
             out.print("\n\n");
         }
-        else if(game.winner() == ChessGame.TeamColor.BLACK){
+        else if(game.game().getWinner() == ChessGame.TeamColor.WHITE){
             clearScreen();
             setType();
             out.print("GAME COMPLETED - WINNER: " + game.whiteUsername());
