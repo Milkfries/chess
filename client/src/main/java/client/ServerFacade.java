@@ -109,12 +109,28 @@ public class ServerFacade {
             throw new Exception(getErrorMessage(e));
         }
     }
-    public void observeGame() throws Exception{
-        //TODO implement observing a game
+    public void observeGame(JoinGameRequest joinGameRequest) throws Exception{
+        try{
+            String bodyJSON = serializer.toJson(joinGameRequest);
+            var httpResponse = sendHTTPRequest("PUT", "/game", joinGameRequest.authToken(), bodyJSON);
+            if(httpResponse.statusCode() != 200){
+                throw new Exception(httpResponse.body());
+            }
+            UserGameCommand command = new UserGameCommand(CommandType.CONNECT, joinGameRequest.authToken(), joinGameRequest.gameID());
+            ws.sendRequest(command);
+        }
+        catch (Exception e){
+            throw new Exception(getErrorMessage(e));
+        }
     }
     public void makeMove(MakeMoveCommand command) throws Exception{
-        // TODO check exceptiosn from ws and possibly format them
-        ws.sendRequest(command);
+        try{
+            ws.sendRequest(command);
+        }
+        catch (Exception e){
+
+        }
+        
     }
     public void resignGame(UserGameCommand command) throws Exception{
         ws.sendRequest(command);
