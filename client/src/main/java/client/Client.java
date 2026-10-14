@@ -395,19 +395,24 @@ public class Client implements ServerMessageObserver{
             out.print(" -\n");
         }
     }
-    private void observeGame(String gameIDString){
+    private void observeGame(String gameNumberString){
         try{
             int gameID = 0;
+            GameData game = null;
             try{
-                gameID = Integer.parseInt(gameIDString);
+                game = cachedGames.get(Integer.parseInt(gameNumberString));
+                gameID = game.gameID();
             }
             catch(Exception e){
                 throw new Exception("Error: GameID must be an integer");
             }
             if(cachedGames.containsKey(gameID)){
-                // TODO finish implementing observe
-                // currentState = ClientState.GAMEPLAY;
-                screenDraw.drawGame(currentGame,TeamColor.WHITE);
+                JoinGameRequest request = new JoinGameRequest(currentAuthToken,null,gameID);
+                serverFacade.joinGame(request);
+                currentState = ClientState.GAMEPLAY;
+                currentGame = game;
+                screenDraw.drawGame(currentGame, ChessGame.TeamColor.WHITE);
+                initGameplay();
             }
             else{
                 throw new Exception("Error: must call list games to see games first");
@@ -470,7 +475,7 @@ public class Client implements ServerMessageObserver{
     }
     private void leaveGame(){
         try{
-            UserGameCommand command = new UserGameCommand(CommandType.RESIGN,currentAuthToken,currentGame.gameID());
+            UserGameCommand command = new UserGameCommand(CommandType.LEAVE,currentAuthToken,currentGame.gameID());
             serverFacade.leaveGame(command);
             screenDraw.clearScreen();
             out.print("You left the game, you can rejoin anytime\n");
