@@ -64,9 +64,10 @@ public class GameService {
             throw new UnauthorizedException("Error: unauthorized");
         }
 
-        if(teamColor == null || teamColor.isBlank() || gameID == 0){
+        if(teamColor.isBlank() || gameID == 0){
             throw new BadRequestException("Error: bad request");
         }
+
 
         GameData currentGame = gameDAO.getGame(gameID);
 
@@ -105,15 +106,11 @@ public class GameService {
 
         gameDAO.updateGame(newGame);
     }
-    public GameData updateGame(int gameID, ChessMove move) throws DataAccessException, InvalidMoveException{
-        GameData gameData = gameDAO.getGame(gameID);
-        gameData.game().makeMove(move);
+    public void updateGame(GameData gameData) throws DataAccessException, InvalidMoveException{
         gameDAO.updateGame(gameData);
-        return gameData;
     }
-    // public GameData resignGame(int gameID, String authToken) throws DataAccessException{
-    //     GameData gameData = gameDAO.getGame(gameID);
-    //     // gameData.game().
-    // }
+    public GameData getGameData(int gameID) throws DataAccessException{
+        return gameDAO.getGame(gameID);
+    }
 
 }
