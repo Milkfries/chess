@@ -3,6 +3,7 @@ package server;
 import org.eclipse.jetty.websocket.api.Session;
 import com.google.gson.Gson;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import io.javalin.websocket.WsCloseContext;
@@ -13,7 +14,6 @@ import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import model.AuthData;
 import model.GameData;
-import model.UserData;
 import server.ConnectionManager.BroadcastType;
 import service.GameService;
 import service.UserService;
@@ -22,7 +22,6 @@ import websocket.commands.UserGameCommand;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
-import websocket.messages.ServerMessage.ServerMessageType;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler{
     private final ConnectionManager connections = new ConnectionManager();
@@ -75,17 +74,42 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void makeMove(MakeMoveCommand command, Session session) throws Exception{
+        ServerMessage msg;
         connections.add(command.getGameID(), command.getAuthToken(), session);
         int gameID = command.getGameID();
         ChessMove move = new ChessMove(new ChessPosition(command.getStartPosition()),new ChessPosition(command.getEndPosition()));
         String authToken = command.getAuthToken();
 
         System.out.println("Make move called \nGame ID: " + Integer.toString(gameID) +  "\nMove: " + move.toString() + "\nauthToken: " + authToken);
+        GameData updatedGameData = gameService.getGameData(gameID);
+        if(updatedGameData.game().getWinner() != null){
+            msg = new NotificationMessage("Game is completed, no more moves allowed");
+            connections.broadcast(command.getGameID(), session, msg, BroadcastType.ONLY_SELF);
+            return;
+        }
+        updatedGameData.game().makeMove(move);
+
+        gameService.updateGame(updatedGameData);
         
-        GameData updatedGameData = gameService.updateGame(gameID,move);
-        
-        ServerMessage msg = new LoadGameMessage(updatedGameData);
+        msg = new LoadGameMessage(updatedGameData);
         connections.broadcast(updatedGameData.gameID(),session,msg,BroadcastType.ALL);
+
+        if(updatedGameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
+            msg = new NotificationMessage("CHECKMATE! BLACK - " + updatedGameData.blackUsername() + " wins the game");
+            connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL_OTHERS);
+            updatedGameData.game().setWinner(ChessGame.TeamColor.BLACK);
+            gameService.updateGame(updatedGameData);
+            msg = new LoadGameMessage(updatedGameData);
+            connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
+        }
+        else if(updatedGameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
+            msg = new NotificationMessage("CHECKMATE! WHITE - " + updatedGameData.whiteUsername() + " wins the game");
+            connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL_OTHERS);
+            updatedGameData.game().setWinner(ChessGame.TeamColor.WHITE);
+            gameService.updateGame(updatedGameData);
+            msg = new LoadGameMessage(updatedGameData);
+            connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
+        }
     }
 
     private void leave(UserGameCommand command, Session session) throws Exception{
@@ -99,8 +123,24 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void resign(UserGameCommand command, Session session) throws Exception{
         System.out.println("Resign");
         AuthData authData = userService.getUserData(command.getAuthToken());
-        ServerMessage msg = new NotificationMessage(authData.username() + ": has resigned the game");
+        GameData gameData = gameService.getGameData(command.getGameID());
+        ChessGame.TeamColor winningColor;
+        if(authData.username().equals(gameData.blackUsername())){
+            winningColor = ChessGame.TeamColor.WHITE;
+        }
+        else if(authData.username().equals(gameData.whiteUsername())){
+            winningColor = ChessGame.TeamColor.BLACK;
+        }
+        else{
+            throw new Exception("Resigning User is not playing");
+        }
+        gameData.game().setWinner(winningColor);
+        gameService.updateGame(gameData);
 
+        ServerMessage msg = new NotificationMessage(authData.username() + ": has resigned the game");
         connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL_OTHERS);
+
+        msg = new LoadGameMessage(gameData);
+        connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
     }
 }
