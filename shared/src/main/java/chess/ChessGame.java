@@ -291,8 +291,11 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return board;
     }
-    public void winGame(TeamColor teamColor){
+    public void setWinner(TeamColor teamColor){
         winner = teamColor;
+    }
+    public TeamColor getWinner(){
+        return winner;
     }
     @Override
     public int hashCode() {
