@@ -190,7 +190,7 @@ public class Client implements ServerMessageObserver{
         else if(command[0].equals("leave") && commandCount == 1){
             leaveGame();
         }
-        else if(command[0].equals("resign") && commandCount == 1 && !isObserver){
+        else if(command[0].equals("resign") && commandCount == 1){
             resignGame();
         }
         else if(command[0].equals("quit") && commandCount == 1){
