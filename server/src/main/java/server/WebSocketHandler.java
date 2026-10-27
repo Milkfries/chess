@@ -79,9 +79,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.add(command.getGameID(), command.getAuthToken(), session);
         AuthData authData = userService.getUserData(command.getAuthToken());
         GameData gameData = gameService.getGameData(command.getGameID());
-        String msg = authData.username() + ": has joined the game";
-        ServerMessage userMessage = new LoadGameMessage(gameData,msg);
-        connections.broadcast(command.getGameID(), session, userMessage,BroadcastType.ALL);
+        ServerMessage userMessage = new LoadGameMessage(gameData);
+        connections.broadcast(command.getGameID(), session, userMessage,BroadcastType.ONLY_SELF);
+        ServerMessage msg = new NotificationMessage(authData.username() + ": has joined the game");
+        connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL_OTHERS);
     }
 
     private void makeMove(MakeMoveCommand command, Session session) throws Exception{
@@ -120,26 +121,34 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         gameService.updateGame(updatedGameData);
         System.out.println("Move was saved");
         
-        
-        String textMessage = null;
+        msg = new LoadGameMessage(updatedGameData);
+        connections.broadcast(updatedGameData.gameID(),session,msg,BroadcastType.ALL);
         if(updatedGameData.game().isInCheck(ChessGame.TeamColor.WHITE)){
-            textMessage = "WHITE PLAYER - " + updatedGameData.whiteUsername().toUpperCase() + " IS IN CHECK";
+            msg = new NotificationMessage("WHITE PLAYER - " + updatedGameData.whiteUsername().toUpperCase() + " IS IN CHECK");
+            connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
         }
         else if(updatedGameData.game().isInCheck(ChessGame.TeamColor.BLACK)){
-            textMessage = "BLACK PLAYER - " + updatedGameData.blackUsername().toUpperCase() + " IS IN CHECK";
+            msg = new NotificationMessage("BLACK PLAYER - " + updatedGameData.blackUsername().toUpperCase() + " IS IN CHECK");
+            connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
         }
         if(updatedGameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
-            textMessage = "WHITE HAS BEEN CHECKMATEd!\n BLACK - " + updatedGameData.blackUsername().toUpperCase() + " WINS THE GAME";
+            String msgString = "WHITE HAS BEEN CHECKMATEd!\n BLACK - " + updatedGameData.blackUsername().toUpperCase() + " WINS THE GAME";
+            msg = new NotificationMessage(msgString);
+            connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
             updatedGameData.game().setWinner(ChessGame.TeamColor.BLACK);
             gameService.updateGame(updatedGameData);
+            msg = new LoadGameMessage(updatedGameData);
+            connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
         }
         else if(updatedGameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
-            textMessage = "BLACK HAS BEEN CHECKMATEd!\\nCHECKMATE! WHITE - " + updatedGameData.whiteUsername().toUpperCase() + " WINS THE GAME";
+            String msgString = "BLACK HAS BEEN CHECKMATEd!\\nCHECKMATE! WHITE - " + updatedGameData.whiteUsername().toUpperCase() + " WINS THE GAME";
+            msg = new NotificationMessage(msgString);
+            connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
             updatedGameData.game().setWinner(ChessGame.TeamColor.WHITE);
             gameService.updateGame(updatedGameData);
+            msg = new LoadGameMessage(updatedGameData);
+            connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
         }
-        msg = new LoadGameMessage(updatedGameData,textMessage);
-        connections.broadcast(updatedGameData.gameID(),session,msg,BroadcastType.ALL);
     }
 
     private void leave(UserGameCommand command, Session session) throws Exception{
@@ -167,9 +176,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         gameData.game().setWinner(winningColor);
         gameService.updateGame(gameData);
 
-        String textMsg = authData.username() + ": has resigned the game";
+        ServerMessage msg = new NotificationMessage(authData.username() + ": has resigned the game");
+        connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL_OTHERS);
 
-        ServerMessage msg = new LoadGameMessage(gameData,textMsg);
+        msg = new LoadGameMessage(gameData);
         connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
     }
 }

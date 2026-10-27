@@ -4,19 +4,14 @@ import model.GameData;
 
 public class LoadGameMessage extends ServerMessage{
     private GameData game;
-	private String msg;
-    public LoadGameMessage(GameData game, String msg){
+    public LoadGameMessage(GameData game){
         super(ServerMessageType.LOAD_GAME);
         this.game = game;
-		this.msg = msg;
     }
 
     public GameData getGameData(){
         return game;
     }
-	public String toString(){
-		return msg;
-	}
 
 	@Override
 	public int hashCode() {

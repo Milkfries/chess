@@ -495,13 +495,7 @@ public class Client implements ServerMessageObserver{
             LoadGameMessage loadGameMessage = serializer.fromJson(msg, LoadGameMessage.class);
             currentGame = loadGameMessage.getGameData();
             redrawBoard();
-            if(loadGameMessage.toString() == null){
-                out.print("[" + currentUser + "] >> ");
-            }
-            else{
-                out.print(loadGameMessage.toString() + "\n[" + currentUser + "] >> ");
-            }
-            
+            out.print("[" + currentUser + "] >> ");
         }
         else if(messageType.equals(ServerMessageType.NOTIFICATION)){
             NotificationMessage notificationMessage = serializer.fromJson(msg, NotificationMessage.class);
