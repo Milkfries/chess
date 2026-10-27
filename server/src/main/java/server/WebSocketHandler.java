@@ -78,6 +78,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Join");
         connections.add(command.getGameID(), command.getAuthToken(), session);
         AuthData authData = userService.getUserData(command.getAuthToken());
+        GameData gameData = gameService.getGameData(command.getGameID());
+        ServerMessage userMessage = new LoadGameMessage(gameData);
+        connections.broadcast(command.getGameID(), session, userMessage,BroadcastType.ONLY_SELF);
         ServerMessage msg = new NotificationMessage(authData.username() + ": has joined the game");
         connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL_OTHERS);
     }
