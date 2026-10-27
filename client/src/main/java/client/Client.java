@@ -8,6 +8,7 @@ import java.util.Scanner;
 import com.google.gson.Gson;
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import chess.ChessGame.TeamColor;
 import model.GameData;
@@ -427,8 +428,27 @@ public class Client implements ServerMessageObserver{
         screenDraw.drawGame(currentGame,currentColor);
     }
     private void makeMove(String startPosition, String endPosition, String promotionPiece){
+        ChessPiece.PieceType promoPiece = null;
         try{
-            MakeMoveCommand command = new MakeMoveCommand(currentAuthToken,currentGame.gameID(),startPosition,endPosition, promotionPiece);
+            if(promotionPiece != null){
+                if(promotionPiece.toLowerCase().equals("knight") || promotionPiece.toLowerCase().equals("k")){
+                    promoPiece = ChessPiece.PieceType.KNIGHT;
+                }
+                else if(promotionPiece.toLowerCase().equals("bishop") || promotionPiece.toLowerCase().equals("b")){
+                    promoPiece = ChessPiece.PieceType.BISHOP;
+                }
+                else if(promotionPiece.toLowerCase().equals("rook") || promotionPiece.toLowerCase().equals("r")){
+                    promoPiece = ChessPiece.PieceType.ROOK;
+                }
+                else if(promotionPiece.toLowerCase().equals("queen") || promotionPiece.toLowerCase().equals("q")){
+                    promoPiece = ChessPiece.PieceType.QUEEN;
+                }
+                else{
+                    throw new Exception("Error: Not a valid promotion piece type");
+                }
+            }
+            ChessMove move = new ChessMove(new ChessPosition(startPosition), new ChessPosition(endPosition), promoPiece);
+            MakeMoveCommand command = new MakeMoveCommand(currentAuthToken,currentGame.gameID(),move);
             serverFacade.makeMove(command);
         }
         catch(Exception e){

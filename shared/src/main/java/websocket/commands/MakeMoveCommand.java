@@ -1,74 +1,63 @@
 package websocket.commands;
 
-public class MakeMoveCommand extends UserGameCommand{
-    private String startPosition;
-    private String endPosition;
-    private String promotionPiece;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 
-    public MakeMoveCommand(String authToken, Integer gameID, String startPosition, String endPosition, String promotionPiece) {
+public class MakeMoveCommand extends UserGameCommand{
+    private ChessMove move;
+
+    public MakeMoveCommand(String authToken, Integer gameID, ChessMove chessMove) {
         super(CommandType.MAKE_MOVE, authToken,gameID);
-        this.startPosition = startPosition;
-        this.endPosition = endPosition;
-        this.promotionPiece = promotionPiece;
+        this.move = chessMove;
     }
-    public String getStartPosition(){
-        return startPosition;
+    public ChessPosition getStartPosition(){
+        return move.getStartPosition();
     }
-    public String getEndPosition(){
-        return endPosition;
+    public ChessPosition getEndPosition(){
+        return move.getEndPosition();
     }
-    public String getPromotionPiece() {
-        return promotionPiece;
+    public ChessPiece.PieceType getPromotionPiece() {
+        return move.getPromotionPiece();
+    }
+    public ChessMove getMove(){
+        return move;
     }
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((startPosition == null) ? 0 : startPosition.hashCode());
-        result = prime * result + ((endPosition == null) ? 0 : endPosition.hashCode());
-        result = prime * result + ((promotionPiece == null) ? 0 : promotionPiece.hashCode());
+        result = prime * result + ((move == null) ? 0 : move.hashCode());
         return result;
     }
-
     @Override
-    public boolean equals(Object object) {
-        if (this == object){
+    public boolean equals(Object obj) {
+        if (this == obj){
             return true;
-        }  
-        if (object == null){
-            return false;
-        }  
-        if (!super.equals(object)){
-            return false;
-        }  
-        if (getClass() != object.getClass()){
-            return false;
-        } 
-        MakeMoveCommand other = (MakeMoveCommand) object;
-        if (startPosition == null) {
-            if (other.startPosition != null){
-                return false;
-            }
-        } else if (!startPosition.equals(other.startPosition)){
+        }
+        if (obj == null){
             return false;
         }
-        if (endPosition == null) {
-            if (other.endPosition != null){
-                return false;
-            }
-        } else if (!endPosition.equals(other.endPosition)){
+        if (!super.equals(obj)){
             return false;
         }
-        if (promotionPiece == null) {
-            if (other.promotionPiece != null){
-                return false;
-            }
-        } else if (!promotionPiece.equals(other.promotionPiece)){
+        if (getClass() != obj.getClass()){
             return false;
         }
-            
+        MakeMoveCommand other = (MakeMoveCommand) obj;
+        if (move == null) {
+            if (other.move != null){
+                return false;
+            }
+        } else if (!move.equals(other.move)){
+            return false;
+        }
         return true;
     }
+    
+
+    
+    
     
 
 }
