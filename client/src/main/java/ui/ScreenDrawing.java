@@ -116,20 +116,10 @@ public class ScreenDrawing {
                 boolean blankRow = space != 1 ? true : false;
                 printEdgeBox(row, row, blankRow, flipBoard);
                 for(int col = colStart; flipBoard ? (col >= colEnd) : (col <= colEnd); col+=colStep){
-                        
-                    if(possibleMoves != null && possibleMoves.contains(potentialMove)){
+                    if(possibleMoves != null){
                         potentialMove = new ChessMove(currentPosition,new ChessPosition(row,col));
-                        hightlightColor = SET_BG_COLOR_GREEN;
+                        hightlightColor = checkHighlight(possibleMoves, potentialMove, row,col);
                     }
-                    else if(possibleMoves != null && possibleMoves.contains(new ChessMove(new ChessPosition(row, col),null))){
-                        potentialMove = new ChessMove(currentPosition,new ChessPosition(row,col));
-                        hightlightColor = SET_BG_COLOR_YELLOW;
-                    }
-                    else if(possibleMoves != null){
-                        potentialMove = new ChessMove(currentPosition,new ChessPosition(row,col));
-                        hightlightColor = null;
-                    }
-                    
                     printPiece(game, row, col, blankRow, hightlightColor);
                 }
                 printEdgeBox(row, 0, blankRow, flipBoard);
@@ -254,7 +244,17 @@ public class ScreenDrawing {
         out.print(EMPTY);
         setBlack();
     }
-
+    private String checkHighlight(Collection<ChessMove> possibleMoves, ChessMove potentialMove, int row, int col){
+        if(possibleMoves.contains(potentialMove)){
+            return SET_BG_COLOR_GREEN;
+        }
+        else if(possibleMoves.contains(new ChessMove(new ChessPosition(row, col),null))){
+            return SET_BG_COLOR_YELLOW;
+        }
+        else{
+            return null;
+        }
+    }
     // Basic drawing functions
     private void setType(){
         out.print(SET_BG_COLOR_BLACK);
