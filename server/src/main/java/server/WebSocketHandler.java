@@ -178,7 +178,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             userIsWhite = whiteUser.equals(authData.username());
         }
         if(blackUser != null){
-            userIsWhite = blackUser.equals(authData.username());
+            userIsBlack = blackUser.equals(authData.username());
         }
         
         if(userIsBlack || userIsWhite){
@@ -191,7 +191,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             GameData updatedGameData = new GameData(gameData.gameID(),whiteUser,blackUser,gameData.gameName(),gameData.game());
             gameService.updateGame(updatedGameData);
         }
-        
         ServerMessage msg = new NotificationMessage(authData.username() + ": has left the game");
         connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL_OTHERS);
         connections.remove(command.getGameID(),command.getAuthToken());
