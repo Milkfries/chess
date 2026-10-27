@@ -21,7 +21,9 @@ import result.*;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.commands.UserGameCommand.CommandType;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 import websocket.messages.ServerMessage.ServerMessageType;
 
@@ -496,17 +498,25 @@ public class Client implements ServerMessageObserver{
     
     @Override
     public void notify(String msg){
-        out.print("message recieved!");
-        out.print(msg);
-        ServerMessage notification = serializer.fromJson(msg, ServerMessage.class);
 
+        ServerMessage notification = serializer.fromJson(msg, ServerMessage.class);
         ServerMessageType messageType = notification.getServerMessageType();
         if(messageType.equals(ServerMessageType.LOAD_GAME)){
-            out.print("Load game");
             LoadGameMessage loadGameMessage = serializer.fromJson(msg, LoadGameMessage.class);
             currentGame = loadGameMessage.getGameData();
             redrawBoard();
             out.print("[" + currentUser + "] >> ");
+        }
+        else if(messageType.equals(ServerMessageType.NOTIFICATION)){
+            NotificationMessage notificationMessage = serializer.fromJson(msg, NotificationMessage.class);
+            out.print(notificationMessage.getNotfication());
+            out.print("\n[" + currentUser + "] >> ");
+        }
+
+        else if(messageType.equals(ServerMessageType.ERROR)){
+            ErrorMessage errorMessage = serializer.fromJson(msg, ErrorMessage.class);
+            out.print(errorMessage.getError());
+            out.print("\n[" + currentUser + "] >> ");
         }
     }
 }
