@@ -1,19 +1,19 @@
 package websocket.messages;
 
 public class ErrorMessage extends ServerMessage{
-    private String message;
+    private String errorMessage;
     public ErrorMessage(String error){
         super(ServerMessageType.ERROR);
-        this.message = error;
+        this.errorMessage = error;
     }
     public String getMessage(){
-        return message;
+        return errorMessage;
     }
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((message == null) ? 0 : message.hashCode());
+		result = prime * result + ((errorMessage == null) ? 0 : errorMessage.hashCode());
 		return result;
 	}
 	@Override
@@ -31,11 +31,11 @@ public class ErrorMessage extends ServerMessage{
 			return false;
 		}
 		ErrorMessage other = (ErrorMessage) object;
-		if (message == null) {
-			if (other.message != null){
+		if (errorMessage == null) {
+			if (other.errorMessage != null){
 				return false;
 			}
-		} else if (!message.equals(other.message)){
+		} else if (!errorMessage.equals(other.errorMessage)){
 			return false;
 		}
 			
