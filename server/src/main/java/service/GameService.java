@@ -63,7 +63,7 @@ public class GameService {
             throw new UnauthorizedException("Error: unauthorized");
         }
 
-        if(teamColor.isBlank() || gameID == 0){
+        if(teamColor==null || teamColor.isBlank() || gameID == 0){
             throw new BadRequestException("Error: bad request");
         }
 
