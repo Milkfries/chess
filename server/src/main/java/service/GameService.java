@@ -84,16 +84,15 @@ public class GameService {
             if(whiteUsername == null){
                 whiteUsername = authData.username();
             }
-            else{
+            else if (!whiteUsername.equals( authData.username())){
                 throw new AlreadyTakenException("Error: already taken");
             }
-            
         }
         else if(teamColor.toUpperCase().equals("BLACK")){
             if(blackUsername == null){
                 blackUsername = authData.username();
             }
-            else{
+            else if (!blackUsername.equals( authData.username())){
                 throw new AlreadyTakenException("Error: already taken");
             }
         }
