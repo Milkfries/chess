@@ -210,8 +210,7 @@ public class Client implements ServerMessageObserver{
               login <USERNAME> <PASSWORD> - to play
               register <USERNAME> <PASSWORD> <EMAIL> - to create an account
               quit - stop playing
-              help - show commands
-              
+              help - show commands\n
             """);
     }
     private void helpPostLogin() {
@@ -222,8 +221,7 @@ public class Client implements ServerMessageObserver{
               observe <ID> - watch a game
               logout - log out of account
               quit - stop playing
-              help - show commands
-
+              help - show commands\n
             """);
     }
     private void helpGameplay(boolean isObserver){
@@ -232,11 +230,9 @@ public class Client implements ServerMessageObserver{
               redraw - redraw the chessboard
               show <SQUARE*> - show all legal moves of a piece
               leave - leave the game
-              help - show commands
-
+              help - show commands\n
               * SQUAREs should be formatted as a number and a letter to represent the square
-              on the board i.e. a1 d6 h8 *
-
+              on the board i.e. a1 d6 h8 *\n
             """);
         }
         else{
@@ -246,18 +242,15 @@ public class Client implements ServerMessageObserver{
               show <SQUARE*> - show all legal moves of a piece
               leave - leave the game
               resign - resign from the game
-              help - show commands
-
+              help - show commands\n
               * SQUAREs should be formatted as a number and a letter to represent the square
-              on the board i.e. a1 d6 h8 *
-
+              on the board i.e. a1 d6 h8 *\n
             """);
         }
     }
     private void notRecognized() {
         out.print("""
-                  This command was not recognized, type help to see commands.
-
+                  This command was not recognized, type help to see commands.\n
                 """);
     }
     private void login(String username, String password) {
@@ -446,18 +439,23 @@ public class Client implements ServerMessageObserver{
             screenDraw.drawGame(currentGame,currentColor, possibleMoves);
         }
         catch (Exception e){
-            out.print("-- FAILED TO SHOW MOVES --\n- ");
-            out.print(e.getMessage());
-            out.print(" -\n");
+            out.print("-- FAILED TO SHOW MOVES --\n- " + e.getMessage() + " -\n");
         }
     }
     private void resignGame(){
+        String line = null;
+        out.print("Are you sure you want to resign (y/n):  ");
+        line = scanner.nextLine().toLowerCase();
+        while(!(line.equals("y") || line.equals("n"))){
+            out.print("\nPlease only type y or n\nAre you sure you want to resign (y/n):  ");
+            line = scanner.nextLine().toLowerCase();
+        }
+        if(line.equals("n")){return;}
         try{
             UserGameCommand command = new UserGameCommand(CommandType.RESIGN,currentAuthToken,currentGame.gameID());
             serverFacade.resignGame(command);
             screenDraw.clearScreen();
-            out.print("You resigned\n\n");
-            out.print("Press enter to continue: ");
+            out.print("You resigned\n\n"+"Press enter to continue: ");
             scanner.nextLine();
             screenDraw.clearScreen();
             currentGame = null;
