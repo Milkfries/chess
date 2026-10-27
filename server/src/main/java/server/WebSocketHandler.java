@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 
 import chess.ChessGame;
 import chess.ChessMove;
-import chess.ChessPosition;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
 import io.javalin.websocket.WsConnectContext;
@@ -95,10 +94,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void makeMove(MakeMoveCommand command, Session session) throws Exception{
         ServerMessage msg;
-        //connections.add(command.getGameID(), command.getAuthToken(), session);
         int gameID = command.getGameID();
-        ChessMove move = new ChessMove(new ChessPosition(command.getStartPosition()),new ChessPosition(command.getEndPosition()));
         String authToken = command.getAuthToken();
+        ChessMove move = command.getMove();
         AuthData authData = userService.getUserData(authToken);
         System.out.println("Make move called \nGame ID: " + Integer.toString(gameID) +  "\nMove: " + move.toString() + "\nauthToken: " + authToken);
         GameData updatedGameData = gameService.getGameData(gameID);
@@ -115,7 +113,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             userIsWhite = whiteUser.equals(authData.username());
         }
         if(blackUser != null){
-            userIsWhite = blackUser.equals(authData.username());
+            userIsBlack = blackUser.equals(authData.username());
         }
         boolean whiteToMove = updatedGameData.game().getTeamTurn().equals(ChessGame.TeamColor.WHITE);
         
@@ -138,6 +136,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         
         msg = new LoadGameMessage(updatedGameData);
         connections.broadcast(updatedGameData.gameID(),session,msg,BroadcastType.ALL);
+        msg = new NotificationMessage("Move was made");
+        connections.broadcast(updatedGameData.gameID(),session,msg,BroadcastType.ALL_OTHERS);
         if(updatedGameData.game().isInCheck(ChessGame.TeamColor.WHITE)){
             msg = new NotificationMessage("WHITE PLAYER - " + updatedGameData.whiteUsername().toUpperCase() + " IS IN CHECK");
             connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
