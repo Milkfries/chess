@@ -184,7 +184,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         ServerMessage msg = new NotificationMessage(authData.username() + ": has resigned the game");
         connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
-
+        connections.remove(command.getGameID(),command.getAuthToken());
         // msg = new LoadGameMessage(gameData);
         // connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
     }
