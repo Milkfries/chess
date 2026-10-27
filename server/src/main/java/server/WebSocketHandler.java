@@ -173,7 +173,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             winningColor = ChessGame.TeamColor.BLACK;
         }
         else{
-            throw new Exception("Resigning User is not playing");
+            throw new Exception("Error: Resigning User is not playing");
+        }
+        if(gameData.game().getWinner() != null)
+        {
+            throw new Exception("Error: Cannot resign, game is over");
         }
         gameData.game().setWinner(winningColor);
         gameService.updateGame(gameData);
