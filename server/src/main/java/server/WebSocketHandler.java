@@ -101,7 +101,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Make move called \nGame ID: " + Integer.toString(gameID) +  "\nMove: " + move.toString() + "\nauthToken: " + authToken);
         GameData updatedGameData = gameService.getGameData(gameID);
         if(updatedGameData.game().getWinner() != null){
-            msg = new NotificationMessage("Game is completed, no more moves allowed");
+            msg = new ErrorMessage("Error: Game is completed, no more moves allowed");
             connections.broadcast(command.getGameID(), session, msg, BroadcastType.ONLY_SELF);
             return;
         }
