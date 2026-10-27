@@ -81,8 +81,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         GameData gameData = gameService.getGameData(command.getGameID());
         ServerMessage userMessage = new LoadGameMessage(gameData);
         connections.broadcast(command.getGameID(), session, userMessage,BroadcastType.ONLY_SELF);
+        System.out.println("I just sent the user the game data");
         ServerMessage msg = new NotificationMessage(authData.username() + ": has joined the game");
         connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL_OTHERS);
+        System.out.println("I just sent everyone else the name of the person who joined");
     }
 
     private void makeMove(MakeMoveCommand command, Session session) throws Exception{
@@ -177,9 +179,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         gameService.updateGame(gameData);
 
         ServerMessage msg = new NotificationMessage(authData.username() + ": has resigned the game");
-        connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL_OTHERS);
-
-        msg = new LoadGameMessage(gameData);
         connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
+
+        // msg = new LoadGameMessage(gameData);
+        // connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
     }
 }
