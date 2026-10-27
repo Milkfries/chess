@@ -6,7 +6,7 @@ public class ErrorMessage extends ServerMessage{
         super(ServerMessageType.ERROR);
         this.error = error;
     }
-    public String getNotfication(){
+    public String getError(){
         return error;
     }
 	@Override

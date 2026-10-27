@@ -1,6 +1,5 @@
 package server;
 
-import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jetty.websocket.api.Session;
