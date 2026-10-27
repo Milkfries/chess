@@ -37,6 +37,7 @@ public class Client implements ServerMessageObserver{
     private ChessGame.TeamColor currentColor;
     private String currentAuthToken;
     private GameData currentGame;
+    private boolean isObserver;
     private HashMap<Integer,GameData> cachedGames;
     private PrintStream out;
     private Scanner scanner;
@@ -87,6 +88,7 @@ public class Client implements ServerMessageObserver{
         currentUser = null;
         currentColor = null;
         currentAuthToken = null;
+        isObserver = false;
         screenDraw.clearScreen();
         out.print("Welcome to Dylan Hale's Chess Client - Type help to see Commands\n");
         quitProgram: while(true){
@@ -178,7 +180,7 @@ public class Client implements ServerMessageObserver{
         int commandCount = command.length;
 
         if(command[0].equals("help") && commandCount == 1){
-            helpGameplay();
+            helpGameplay(isObserver);
         }
         else if(command[0].equals("redraw") && commandCount == 1){
             redrawBoard();
@@ -199,7 +201,7 @@ public class Client implements ServerMessageObserver{
         else if(command[0].equals("leave") && commandCount == 1){
             leaveGame();
         }
-        else if(command[0].equals("resign") && commandCount == 1){
+        else if(command[0].equals("resign") && commandCount == 1 && !isObserver){
             resignGame();
         }
         else if(command[0].equals("quit") && commandCount == 1){
@@ -238,8 +240,21 @@ public class Client implements ServerMessageObserver{
 
             """);
     }
-    private void helpGameplay(){
-        out.print("""
+    private void helpGameplay(boolean isObserver){
+        if(isObserver){
+            out.print("""
+              redraw - redraw the chessboard
+              show <SQUARE*> - show all legal moves of a piece
+              leave - leave the game
+              help - show commands
+
+              * SQUAREs should be formatted as a number and a letter to represent the square
+              on the board i.e. a1 d6 h8 *
+
+            """);
+        }
+        else{
+            out.print("""
               redraw - redraw the chessboard
               move <STARTSQUARE*> <ENDSQUARE*> - move a piece from a square to another square
               show <SQUARE*> - show all legal moves of a piece
@@ -251,6 +266,8 @@ public class Client implements ServerMessageObserver{
               on the board i.e. a1 d6 h8 *
 
             """);
+        }
+        
     }
     private void notRecognized() {
         out.print("""
@@ -376,7 +393,7 @@ public class Client implements ServerMessageObserver{
                 gameID = game.gameID();
             }
             catch(Exception e){
-                throw new Exception("Error: GameID must be an integer of a known game, call list games to see game numbers ");
+                throw new Exception("Error: GameID must be an integer of a known game, call list games to see game numbers");
             }
             if(cachedGames.containsKey(gameID)){
                 JoinGameRequest request = new JoinGameRequest(currentAuthToken,color.toLowerCase(),gameID);
@@ -406,14 +423,15 @@ public class Client implements ServerMessageObserver{
                 gameID = game.gameID();
             }
             catch(Exception e){
-                throw new Exception("Error: GameID must be an integer");
+                throw new Exception("Error: GameID must be an integer of a known game, call list games to see game numbers");
             }
             if(cachedGames.containsKey(gameID)){
                 JoinGameRequest request = new JoinGameRequest(currentAuthToken,null,gameID);
-                serverFacade.joinGame(request);
+                serverFacade.observeGame(request);
                 currentState = ClientState.GAMEPLAY;
                 currentGame = game;
-                screenDraw.drawGame(currentGame, ChessGame.TeamColor.WHITE);
+                currentColor = ChessGame.TeamColor.WHITE;
+                screenDraw.drawGame(currentGame, currentColor);
                 initGameplay();
             }
             else{
