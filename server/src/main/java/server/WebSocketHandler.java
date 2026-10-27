@@ -107,9 +107,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connections.broadcast(command.getGameID(), session, msg, BroadcastType.ONLY_SELF);
             return;
         }
-        
-        boolean userIsWhite = updatedGameData.whiteUsername().equals(authData.username());
-        boolean userIsBlack = updatedGameData.blackUsername().equals(authData.username());
+        String whiteUser = updatedGameData.whiteUsername();
+        String blackUser = updatedGameData.blackUsername();
+        boolean userIsWhite = false;
+        boolean userIsBlack = false;
+        if(whiteUser != null){
+            userIsWhite = whiteUser.equals(authData.username());
+        }
+        if(blackUser != null){
+            userIsWhite = blackUser.equals(authData.username());
+        }
         boolean whiteToMove = updatedGameData.game().getTeamTurn().equals(ChessGame.TeamColor.WHITE);
         
         if(whiteToMove && userIsWhite){
@@ -163,18 +170,28 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Leave");
         AuthData authData = userService.getUserData(command.getAuthToken());
         GameData gameData = gameService.getGameData(command.getGameID());
-        boolean userIsWhite = gameData.whiteUsername().equals(authData.username());
-        boolean userIsBlack = gameData.blackUsername().equals(authData.username());
         String whiteUser = gameData.whiteUsername();
         String blackUser = gameData.blackUsername();
-        if(userIsWhite){
-            whiteUser = null;
+        boolean userIsWhite = false;
+        boolean userIsBlack = false;
+        if(whiteUser != null){
+            userIsWhite = whiteUser.equals(authData.username());
         }
-        if(userIsBlack){
-            blackUser = null;
+        if(blackUser != null){
+            userIsWhite = blackUser.equals(authData.username());
         }
-        GameData updatedGameData = new GameData(gameData.gameID(),whiteUser,blackUser,gameData.gameName(),gameData.game());
-        gameService.updateGame(updatedGameData);
+        
+        if(userIsBlack || userIsWhite){
+            if(userIsWhite){
+                whiteUser = null;
+            }
+            if(userIsBlack){
+                blackUser = null;
+            }
+            GameData updatedGameData = new GameData(gameData.gameID(),whiteUser,blackUser,gameData.gameName(),gameData.game());
+            gameService.updateGame(updatedGameData);
+        }
+        
         ServerMessage msg = new NotificationMessage(authData.username() + ": has left the game");
         connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL_OTHERS);
         connections.remove(command.getGameID(),command.getAuthToken());
