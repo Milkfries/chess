@@ -36,13 +36,13 @@ public class ConnectionManager {
                 if (c.isOpen()) {
                     if(broadcastType==BroadcastType.ONLY_SELF && c.equals(currentSession)){
                         c.getRemote().sendString(msg);
-                    }
-                    else if(c.equals(currentSession)) {
-                        c.getRemote().sendString(msg);
+                        break;
                     }
                     else if(broadcastType == BroadcastType.ALL){
                         c.getRemote().sendString(msg);
-                    
+                    }
+                    else if(!c.equals(currentSession)){
+                        c.getRemote().sendString(msg);
                     }
                 }
             }
