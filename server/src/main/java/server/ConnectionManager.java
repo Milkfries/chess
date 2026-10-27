@@ -41,7 +41,7 @@ public class ConnectionManager {
                     else if(broadcastType == BroadcastType.ALL){
                         c.getRemote().sendString(msg);
                     }
-                    else if(!c.equals(currentSession)){
+                    else if(broadcastType==BroadcastType.ALL_OTHERS && !c.equals(currentSession)){
                         c.getRemote().sendString(msg);
                     }
                 }
