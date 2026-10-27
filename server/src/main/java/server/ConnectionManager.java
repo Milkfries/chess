@@ -29,24 +29,30 @@ public class ConnectionManager {
         connections.get(gameID).remove(authToken);
     }
 
-    public void broadcast(int gameID, Session currentSession, ServerMessage serverMsg, BroadcastType broadcastType) throws IOException {
-        String msg = serializer.toJson(serverMsg);
-        for (Session c : connections.get(gameID).values()) {
-            if (c.isOpen()) {
-                if(broadcastType==BroadcastType.ONLY_SELF){
-                    if(c.equals(currentSession)){
-                        c.getRemote().sendString(msg);
+    public void broadcast(int gameID, Session currentSession, ServerMessage serverMsg, BroadcastType broadcastType) {
+        try{
+            String msg = serializer.toJson(serverMsg);
+            for (Session c : connections.get(gameID).values()) {
+                if (c.isOpen()) {
+                    if(broadcastType==BroadcastType.ONLY_SELF){
+                        if(c.equals(currentSession)){
+                            c.getRemote().sendString(msg);
+                        }
                     }
-                }
-                else{
-                    if (!c.equals(currentSession)) {
-                        c.getRemote().sendString(msg);
-                    }
-                    else if(broadcastType == BroadcastType.ALL){
-                        c.getRemote().sendString(msg);
+                    else{
+                        if (!c.equals(currentSession)) {
+                            c.getRemote().sendString(msg);
+                        }
+                        else if(broadcastType == BroadcastType.ALL){
+                            c.getRemote().sendString(msg);
+                        }
                     }
                 }
             }
         }
+        catch(Exception e){
+            System.out.println("Error: " + e.getMessage());
+        }
+        
     }
 }

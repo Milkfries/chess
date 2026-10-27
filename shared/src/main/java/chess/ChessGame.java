@@ -109,7 +109,7 @@ public class ChessGame {
         ChessPiece endPiece = board.getPiece(endPosition);
 
         if(isInCheckmate(teamTurn)){
-            throw new InvalidMoveException("Cannot Move - Game Over");
+            throw new InvalidMoveException("Error: Cannot Move - Game Over");
         }
         isValidPiece(piece); // checks if the piece exists and is the right color
 
@@ -119,13 +119,13 @@ public class ChessGame {
             makeMoveOnBoard(move);
         }
         else{
-            throw new InvalidMoveException("Move Not Valid");
+            throw new InvalidMoveException("Error:  Move Not Valid");
         }
 
         if(isInCheck(teamTurn)){
             board.addPiece(startPosition, board.getPiece(startPosition));
             board.addPiece(endPosition, endPiece);
-            throw new InvalidMoveException("Move Puts Player in Check");
+            throw new InvalidMoveException("Error: Move Puts Player in Check");
         }
         piece.setHasMoved();
         if(teamTurn == TeamColor.BLACK){

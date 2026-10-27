@@ -41,23 +41,30 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     @Override
-    public void handleMessage(WsMessageContext ctx) throws Exception{
+    public void handleMessage(WsMessageContext ctx){
         UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
-        switch (command.getCommandType()){
-            case CONNECT:
-                connect(command, ctx.session);
-                break;
-            case MAKE_MOVE:
-                MakeMoveCommand moveCommand = new Gson().fromJson(ctx.message(), MakeMoveCommand.class);
-                makeMove(moveCommand, ctx.session);
-                break;
-            case LEAVE:
-                leave(command, ctx.session);
-                break;
-            case RESIGN:
-                resign(command, ctx.session);
-                break;
+        try{
+            switch (command.getCommandType()){
+                case CONNECT:
+                    connect(command, ctx.session);
+                    break;
+                case MAKE_MOVE:
+                    MakeMoveCommand moveCommand = new Gson().fromJson(ctx.message(), MakeMoveCommand.class);
+                    makeMove(moveCommand, ctx.session);
+                    break;
+                case LEAVE:
+                    leave(command, ctx.session);
+                    break;
+                case RESIGN:
+                    resign(command, ctx.session);
+                    break;
+            }
         }
+        catch(Exception e){
+            ServerMessage msg = new NotificationMessage(e.getMessage());
+            connections.broadcast(command.getGameID(), ctx.session, msg, BroadcastType.ALL_OTHERS);
+        }
+        
     }
 
     @Override
@@ -88,8 +95,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
         updatedGameData.game().makeMove(move);
+        System.out.println("Move was made");
+         // TODO Catch errors here
 
         gameService.updateGame(updatedGameData);
+        System.out.println("Move was saved");
         
         msg = new LoadGameMessage(updatedGameData);
         connections.broadcast(updatedGameData.gameID(),session,msg,BroadcastType.ALL);
