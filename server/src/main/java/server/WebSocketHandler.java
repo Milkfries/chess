@@ -79,6 +79,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.add(command.getGameID(), command.getAuthToken(), session);
         AuthData authData = userService.getUserData(command.getAuthToken());
         GameData gameData = gameService.getGameData(command.getGameID());
+        if (authData == null){
+            throw new Exception("Error: User does not exist");
+        }
+        if (gameData == null){
+            throw new Exception("Error: Game does not exist");
+        }
         ServerMessage userMessage = new LoadGameMessage(gameData);
         connections.broadcast(command.getGameID(), session, userMessage,BroadcastType.ONLY_SELF);
         System.out.println("I just sent the user the game data");
