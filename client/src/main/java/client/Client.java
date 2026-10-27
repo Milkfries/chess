@@ -499,11 +499,11 @@ public class Client implements ServerMessageObserver{
         }
         else if(messageType.equals(ServerMessageType.NOTIFICATION)){
             NotificationMessage notificationMessage = serializer.fromJson(msg, NotificationMessage.class);
-            out.print(notificationMessage.getNotfication() + "\n[" + currentUser + "] >> ");
+            out.print(notificationMessage.getMessage() + "\n[" + currentUser + "] >> ");
         }
         else if(messageType.equals(ServerMessageType.ERROR)){
             ErrorMessage errorMessage = serializer.fromJson(msg, ErrorMessage.class);
-            out.print(errorMessage.getError() + "\n[" + currentUser + "] >> ");
+            out.print(errorMessage.getMessage() + "\n[" + currentUser + "] >> ");
         }
     }
 }
