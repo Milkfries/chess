@@ -31,20 +31,20 @@ public class MakeMoveCommand extends UserGameCommand{
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj){
+    public boolean equals(Object object) {
+        if (this == object){
             return true;
         }  
-        if (obj == null){
+        if (object == null){
             return false;
         }  
-        if (!super.equals(obj)){
+        if (!super.equals(object)){
             return false;
         }  
-        if (getClass() != obj.getClass()){
+        if (getClass() != object.getClass()){
             return false;
         } 
-        MakeMoveCommand other = (MakeMoveCommand) obj;
+        MakeMoveCommand other = (MakeMoveCommand) object;
         if (startPosition == null) {
             if (other.startPosition != null){
                 return false;

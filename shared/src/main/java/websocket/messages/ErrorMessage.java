@@ -17,20 +17,20 @@ public class ErrorMessage extends ServerMessage{
 		return result;
 	}
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj){
+	public boolean equals(Object object) {
+		if (this == object){
 			return true;
 		}
-		if (obj == null){
+		if (object == null){
 			return false;
 		}
-		if (!super.equals(obj)){
+		if (!super.equals(object)){
 			return false;
 		}
-		if (getClass() != obj.getClass()){
+		if (getClass() != object.getClass()){
 			return false;
 		}
-		ErrorMessage other = (ErrorMessage) obj;
+		ErrorMessage other = (ErrorMessage) object;
 		if (error == null) {
 			if (other.error != null){
 				return false;
