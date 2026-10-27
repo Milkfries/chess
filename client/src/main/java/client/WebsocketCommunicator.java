@@ -39,11 +39,11 @@ public class WebsocketCommunicator extends Endpoint{
             throw new Exception("Error: " + ex.getMessage());
         }
     }
-    public void sendRequest(UserGameCommand command) throws ResponseException{
+    public void sendRequest(UserGameCommand command) throws Exception{
         try {
             this.session.getBasicRemote().sendText(serializer.toJson(command));
         } catch (IOException ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
     }
 
