@@ -479,7 +479,6 @@ public class Client implements ServerMessageObserver{
             serverFacade.resignGame(command);
             screenDraw.clearScreen();
             out.print("You resigned\n\n");
-            // TODO implement resign actions (results type of screen?)
             out.print("Press enter to continue: ");
             scanner.nextLine();
             screenDraw.clearScreen();
