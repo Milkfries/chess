@@ -121,15 +121,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         msg = new LoadGameMessage(updatedGameData);
         connections.broadcast(updatedGameData.gameID(),session,msg,BroadcastType.ALL);
         if(updatedGameData.game().isInCheck(ChessGame.TeamColor.WHITE)){
-            msg = new NotificationMessage("WHITE PLAYER - " + updatedGameData.whiteUsername() + " IS IN CHECK");
+            msg = new NotificationMessage("WHITE PLAYER - " + updatedGameData.whiteUsername().toUpperCase() + " IS IN CHECK");
             connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
         }
         else if(updatedGameData.game().isInCheck(ChessGame.TeamColor.BLACK)){
-            msg = new NotificationMessage("BLACK PLAYER - " + updatedGameData.blackUsername() + " IS IN CHECK");
+            msg = new NotificationMessage("BLACK PLAYER - " + updatedGameData.blackUsername().toUpperCase() + " IS IN CHECK");
             connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
         }
         if(updatedGameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
-            msg = new NotificationMessage("WHITE HAS BEEN CHECKMATEd!\n BLACK - " + updatedGameData.blackUsername() + " WINS THE GAME");
+            msg = new NotificationMessage("WHITE HAS BEEN CHECKMATEd!\n BLACK - " + updatedGameData.blackUsername().toUpperCase() + " WINS THE GAME");
             connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
             updatedGameData.game().setWinner(ChessGame.TeamColor.BLACK);
             gameService.updateGame(updatedGameData);
@@ -137,7 +137,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
         }
         else if(updatedGameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
-            msg = new NotificationMessage("BLACK HAS BEEN CHECKMATEd!\\nCHECKMATE! WHITE - " + updatedGameData.whiteUsername() + " WINS THE GAME");
+            msg = new NotificationMessage("BLACK HAS BEEN CHECKMATEd!\\nCHECKMATE! WHITE - " + updatedGameData.whiteUsername().toUpperCase() + " WINS THE GAME");
             connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL);
             updatedGameData.game().setWinner(ChessGame.TeamColor.WHITE);
             gameService.updateGame(updatedGameData);

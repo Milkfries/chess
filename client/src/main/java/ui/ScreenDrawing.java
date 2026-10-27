@@ -27,24 +27,24 @@ public class ScreenDrawing {
         if(game.game().getWinner() == ChessGame.TeamColor.BLACK){
             clearScreen();
             setType();
-            out.print("GAME COMPLETED - WINNER: " + game.blackUsername());
-            out.print("Chess Game: " + game.gameName() + "\n\n");
-            out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
+            out.print("GAME COMPLETED - WINNER: " + game.blackUsername().toUpperCase());
+            out.print("\nChess Game: " + game.gameName() + "\n\n");
+            out.print("  White pieces: " + game.whiteUsername().toUpperCase() + "\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
             out.print("\n\n");
         }
         else if(game.game().getWinner() == ChessGame.TeamColor.WHITE){
             clearScreen();
             setType();
-            out.print("GAME COMPLETED - WINNER: " + game.whiteUsername());
-            out.print("Chess Game: " + game.gameName() + "\n\n");
-            out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
+            out.print("GAME COMPLETED - WINNER: " + game.whiteUsername().toUpperCase());
+            out.print("\nChess Game: " + game.gameName() + "\n\n");
+            out.print("  White pieces: " + game.whiteUsername().toUpperCase() + "\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
             out.print("\n\n");
         }
         else{
             clearScreen();
             setType();
             out.print("Chess Game: " + game.gameName() + "\n\n");
-            out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
+            out.print("  White pieces: " + game.whiteUsername().toUpperCase() + "\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
             out.print("\n\n");
             if (game.game().getTeamTurn() == TeamColor.WHITE){
                 out.print("WHITE TO PLAY\n");
@@ -64,7 +64,7 @@ public class ScreenDrawing {
             setType();
             out.print("GAME COMPLETED - WINNER: " + game.blackUsername());
             out.print("Chess Game: " + game.gameName() + "\n\n");
-            out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
+            out.print("  White pieces: " + game.whiteUsername().toUpperCase() + "\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
             out.print("\n\n");
         }
         else if(game.game().getWinner() == ChessGame.TeamColor.WHITE){
@@ -72,14 +72,14 @@ public class ScreenDrawing {
             setType();
             out.print("GAME COMPLETED - WINNER: " + game.whiteUsername());
             out.print("Chess Game: " + game.gameName() + "\n\n");
-            out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
+            out.print("  White pieces: " + game.whiteUsername().toUpperCase() + "\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
             out.print("\n\n");
         }
         else{
             clearScreen();
             setType();
             out.print("Chess Game: " + game.gameName() + "\n\n");
-            out.print("  White pieces: " + game.whiteUsername() + "\n          vs\n  Black pieces: " + game.blackUsername());
+            out.print("  White pieces: " + game.whiteUsername().toUpperCase() + "\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
             out.print("\n");
             setBlack();
             drawChessBoard(game.game(),color == TeamColor.WHITE ? false : true, possibleMoves);
