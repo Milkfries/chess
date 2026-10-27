@@ -1,19 +1,19 @@
 package websocket.messages;
 
 public class NotificationMessage extends ServerMessage{
-    private String notification;
+    private String message;
     public NotificationMessage(String notification){
         super(ServerMessageType.NOTIFICATION);
-        this.notification = notification;
+        this.message = notification;
     }
-    public String getNotfication(){
-        return notification;
+    public String getMessage(){
+        return message;
     }
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((notification == null) ? 0 : notification.hashCode());
+		result = prime * result + ((message == null) ? 0 : message.hashCode());
 		return result;
 	}
 	@Override
@@ -31,11 +31,11 @@ public class NotificationMessage extends ServerMessage{
 			return false;
 		}
 		NotificationMessage other = (NotificationMessage) obj;
-		if (notification == null) {
-			if (other.notification != null){
+		if (message == null) {
+			if (other.message != null){
 				return false;
 			}
-		} else if (!notification.equals(other.notification)){
+		} else if (!message.equals(other.message)){
 			return false;
 		}
 		return true;
