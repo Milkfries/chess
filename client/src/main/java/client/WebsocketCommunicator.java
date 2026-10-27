@@ -14,7 +14,6 @@ import jakarta.websocket.MessageHandler;
 import jakarta.websocket.Session;
 import jakarta.websocket.WebSocketContainer;
 import websocket.commands.UserGameCommand;
-import websocket.exceptions.ResponseException;
 
 public class WebsocketCommunicator extends Endpoint{
     private Session session;
