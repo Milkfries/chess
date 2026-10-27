@@ -1,16 +1,11 @@
 package client;
-
 import ui.ScreenDrawing;
-
-
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Scanner;
-
 import com.google.gson.Gson;
-
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
@@ -26,8 +21,6 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 import websocket.messages.ServerMessage.ServerMessageType;
-
-
 public class Client implements ServerMessageObserver{
     private ServerFacade serverFacade;
     private String port;
@@ -43,8 +36,6 @@ public class Client implements ServerMessageObserver{
     private Scanner scanner;
     private ScreenDrawing screenDraw;
     private Gson serializer;
-
-
     private enum ClientState {
         PRELOGIN,
         POSTLOGIN,
@@ -80,7 +71,6 @@ public class Client implements ServerMessageObserver{
             scanner.nextLine();
             initServer();
         }
-
     }
     public void mainLoop(){
         currentState = ClientState.PRELOGIN;
@@ -115,7 +105,6 @@ public class Client implements ServerMessageObserver{
         String line = scanner.nextLine().toLowerCase();
         String[] command = line.split("\\s+");
         int commandCount = command.length;
-
         if(command[0].equals("help") && commandCount == 1){
             helpPreLogin();
         }
@@ -213,9 +202,6 @@ public class Client implements ServerMessageObserver{
             notRecognized();
         }
     }
-    private void initGameplay(){
-
-    }
     private void quitProgram(){
         currentState = ClientState.QUIT;
     }
@@ -267,7 +253,6 @@ public class Client implements ServerMessageObserver{
 
             """);
         }
-        
     }
     private void notRecognized() {
         out.print("""
@@ -282,7 +267,6 @@ public class Client implements ServerMessageObserver{
             currentAuthToken = result.authToken();
             currentUser = username;
             out.print("  SUCCESS - [" + currentUser+"] has logged in\n");
-
             currentState = ClientState.POSTLOGIN;
         }
         catch(Exception e){
@@ -298,7 +282,6 @@ public class Client implements ServerMessageObserver{
             currentAuthToken = result.authToken();
             currentUser = username;
             out.print("  SUCCESS - [" + currentUser+"] has been registered and logged in\n\n");
-
             currentState = ClientState.POSTLOGIN;
         }
         catch(Exception e){
@@ -307,7 +290,6 @@ public class Client implements ServerMessageObserver{
             out.print(" -\n");
         }
     }
-
     private void logout(){
         LogoutRequest request = new LogoutRequest(currentAuthToken);
         try{
@@ -361,7 +343,6 @@ public class Client implements ServerMessageObserver{
                    out.print("empty");
                 }
                 out.print("}\n");
-
                 cachedGames.put(gameNumber,game);
                 gameNumber++;
             }
@@ -402,7 +383,6 @@ public class Client implements ServerMessageObserver{
                 currentColor = tempColor;
                 currentGame = game;
                 screenDraw.drawGame(currentGame, currentColor);
-                initGameplay();
             }
             else{
                 throw new Exception("Error: must call list games to see games first");
@@ -432,7 +412,6 @@ public class Client implements ServerMessageObserver{
                 currentGame = game;
                 currentColor = ChessGame.TeamColor.WHITE;
                 screenDraw.drawGame(currentGame, currentColor);
-                initGameplay();
             }
             else{
                 throw new Exception("Error: must call list games to see games first");
@@ -471,7 +450,6 @@ public class Client implements ServerMessageObserver{
             out.print(e.getMessage());
             out.print(" -\n");
         }
-        
     }
     private void resignGame(){
         try{
@@ -487,9 +465,7 @@ public class Client implements ServerMessageObserver{
             currentState = ClientState.POSTLOGIN;
         }
         catch(Exception e){
-            out.print("-- FAILED TO RESIGN --\n- ");
-            out.print(e.getMessage());
-            out.print(" -\n");
+            out.print("-- FAILED TO RESIGN --\n- " + e.getMessage() + " -\n");
         }
     }
     private void leaveGame(){
@@ -511,11 +487,8 @@ public class Client implements ServerMessageObserver{
             out.print(" -\n");
         }
     }
-
-    
     @Override
     public void notify(String msg){
-
         ServerMessage notification = serializer.fromJson(msg, ServerMessage.class);
         ServerMessageType messageType = notification.getServerMessageType();
         if(messageType.equals(ServerMessageType.LOAD_GAME)){
@@ -526,14 +499,11 @@ public class Client implements ServerMessageObserver{
         }
         else if(messageType.equals(ServerMessageType.NOTIFICATION)){
             NotificationMessage notificationMessage = serializer.fromJson(msg, NotificationMessage.class);
-            out.print(notificationMessage.getNotfication());
-            out.print("\n[" + currentUser + "] >> ");
+            out.print(notificationMessage.getNotfication() + "\n[" + currentUser + "] >> ");
         }
-
         else if(messageType.equals(ServerMessageType.ERROR)){
             ErrorMessage errorMessage = serializer.fromJson(msg, ErrorMessage.class);
-            out.print(errorMessage.getError());
-            out.print("\n[" + currentUser + "] >> ");
+            out.print(errorMessage.getError() + "\n[" + currentUser + "] >> ");
         }
     }
 }

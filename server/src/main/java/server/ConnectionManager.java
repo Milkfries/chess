@@ -7,7 +7,8 @@ import com.google.gson.Gson;
 
 import websocket.messages.ServerMessage;
 public class ConnectionManager {
-    public final ConcurrentHashMap<Integer, ConcurrentHashMap<String,Session>> connections = new ConcurrentHashMap<>(); // game id - > username (maybe authToken) - > Session
+    // game id - > username (maybe authToken) - > Session
+    public final ConcurrentHashMap<Integer, ConcurrentHashMap<String,Session>> connections = new ConcurrentHashMap<>(); 
     public Gson serializer = new Gson();
     public void add(int gameID, String authToken, Session session) {
         ConcurrentHashMap<String,Session> gameConnections = connections.get(gameID);
@@ -33,18 +34,15 @@ public class ConnectionManager {
             String msg = serializer.toJson(serverMsg);
             for (Session c : connections.get(gameID).values()) {
                 if (c.isOpen()) {
-                    if(broadcastType==BroadcastType.ONLY_SELF){
-                        if(c.equals(currentSession)){
-                            c.getRemote().sendString(msg);
-                        }
+                    if(broadcastType==BroadcastType.ONLY_SELF && c.equals(currentSession)){
+                        c.getRemote().sendString(msg);
                     }
-                    else{
-                        if (!c.equals(currentSession)) {
-                            c.getRemote().sendString(msg);
-                        }
-                        else if(broadcastType == BroadcastType.ALL){
-                            c.getRemote().sendString(msg);
-                        }
+                    else if(c.equals(currentSession)) {
+                        c.getRemote().sendString(msg);
+                    }
+                    else if(broadcastType == BroadcastType.ALL){
+                        c.getRemote().sendString(msg);
+                    
                     }
                 }
             }

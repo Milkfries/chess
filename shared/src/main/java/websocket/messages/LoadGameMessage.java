@@ -23,20 +23,26 @@ public class LoadGameMessage extends ServerMessage{
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj){
 			return true;
-		if (obj == null)
+		}
+		if (obj == null){
 			return false;
-		if (!super.equals(obj))
+		}
+		if (!super.equals(obj)){
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()){
 			return false;
+		}
 		LoadGameMessage other = (LoadGameMessage) obj;
 		if (game == null) {
-			if (other.game != null)
+			if (other.game != null){
 				return false;
-		} else if (!game.equals(other.game))
+			}
+		} else if (!game.equals(other.game)){
 			return false;
+		}
 		return true;
 	}
 

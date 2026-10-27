@@ -10,7 +10,7 @@ import chess.ChessGame.TeamColor;
 import model.GameData;
 
 public class ScreenDrawing {
-    private final String[] BOARD_LETTERS = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
+    private final String[] boardLetters = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
     private PrintStream out;
 
     // Pass in print stream from client
@@ -29,7 +29,8 @@ public class ScreenDrawing {
             setType();
             out.print("GAME COMPLETED - WINNER: " + game.blackUsername().toUpperCase());
             out.print("\nChess Game: " + game.gameName() + "\n\n");
-            out.print("  White pieces: " + game.whiteUsername().toUpperCase() + "\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
+            out.print("  White pieces: " + game.whiteUsername().toUpperCase());
+            out.print("\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
             out.print("\n\n");
         }
         else if(game.game().getWinner() == ChessGame.TeamColor.WHITE){
@@ -37,14 +38,16 @@ public class ScreenDrawing {
             setType();
             out.print("GAME COMPLETED - WINNER: " + game.whiteUsername().toUpperCase());
             out.print("\nChess Game: " + game.gameName() + "\n\n");
-            out.print("  White pieces: " + game.whiteUsername().toUpperCase() + "\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
+            out.print("  White pieces: " + game.whiteUsername().toUpperCase());
+            out.print("\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
             out.print("\n\n");
         }
         else{
             clearScreen();
             setType();
             out.print("Chess Game: " + game.gameName() + "\n\n");
-            out.print("  White pieces: " + game.whiteUsername().toUpperCase() + "\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
+            out.print("  White pieces: " + game.whiteUsername().toUpperCase());
+            out.print("\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
             out.print("\n\n");
             if (game.game().getTeamTurn() == TeamColor.WHITE){
                 out.print("WHITE TO PLAY\n");
@@ -64,7 +67,8 @@ public class ScreenDrawing {
             setType();
             out.print("GAME COMPLETED - WINNER: " + game.blackUsername());
             out.print("Chess Game: " + game.gameName() + "\n\n");
-            out.print("  White pieces: " + game.whiteUsername().toUpperCase() + "\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
+            out.print("  White pieces: " + game.whiteUsername().toUpperCase());
+            out.print("\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
             out.print("\n\n");
         }
         else if(game.game().getWinner() == ChessGame.TeamColor.WHITE){
@@ -72,14 +76,16 @@ public class ScreenDrawing {
             setType();
             out.print("GAME COMPLETED - WINNER: " + game.whiteUsername());
             out.print("Chess Game: " + game.gameName() + "\n\n");
-            out.print("  White pieces: " + game.whiteUsername().toUpperCase() + "\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
+            out.print("  White pieces: " + game.whiteUsername().toUpperCase());
+            out.print("\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
             out.print("\n\n");
         }
         else{
             clearScreen();
             setType();
             out.print("Chess Game: " + game.gameName() + "\n\n");
-            out.print("  White pieces: " + game.whiteUsername().toUpperCase() + "\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
+            out.print("  White pieces: " + game.whiteUsername().toUpperCase());
+            out.print("\n          vs\n  Black pieces: " + game.blackUsername().toUpperCase());
             out.print("\n");
             setBlack();
             drawChessBoard(game.game(),color == TeamColor.WHITE ? false : true, possibleMoves);
@@ -110,18 +116,20 @@ public class ScreenDrawing {
                 boolean blankRow = space != 1 ? true : false;
                 printEdgeBox(row, row, blankRow, flipBoard);
                 for(int col = colStart; flipBoard ? (col >= colEnd) : (col <= colEnd); col+=colStep){
-                    if(possibleMoves != null){
+                        
+                    if(possibleMoves != null && possibleMoves.contains(potentialMove)){
                         potentialMove = new ChessMove(currentPosition,new ChessPosition(row,col));
-                        if(possibleMoves.contains(potentialMove)){
-                            hightlightColor = SET_BG_COLOR_GREEN;
-                        }
-                        else if(possibleMoves.contains(new ChessMove(new ChessPosition(row, col),null))){
-                            hightlightColor = SET_BG_COLOR_YELLOW;
-                        }
-                        else{
-                            hightlightColor = null;
-                        }
+                        hightlightColor = SET_BG_COLOR_GREEN;
                     }
+                    else if(possibleMoves != null && possibleMoves.contains(new ChessMove(new ChessPosition(row, col),null))){
+                        potentialMove = new ChessMove(currentPosition,new ChessPosition(row,col));
+                        hightlightColor = SET_BG_COLOR_YELLOW;
+                    }
+                    else if(possibleMoves != null){
+                        potentialMove = new ChessMove(currentPosition,new ChessPosition(row,col));
+                        hightlightColor = null;
+                    }
+                    
                     printPiece(game, row, col, blankRow, hightlightColor);
                 }
                 printEdgeBox(row, 0, blankRow, flipBoard);
@@ -228,7 +236,7 @@ public class ScreenDrawing {
             setBold();
             if(row == 0){
                 try{
-                    out.print(BOARD_LETTERS[col]);
+                    out.print(boardLetters[col]);
                 }
                 catch (Exception e){
                     out.print(EMPTY_BIG);
