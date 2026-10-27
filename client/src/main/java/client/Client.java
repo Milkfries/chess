@@ -374,7 +374,7 @@ public class Client implements ServerMessageObserver{
                 gameID = game.gameID();
             }
             catch(Exception e){
-                throw new Exception("Error: GameID must be an integer");
+                throw new Exception("Error: GameID must be an integer of a known game, call list games to see game numbers ");
             }
             if(cachedGames.containsKey(gameID)){
                 JoinGameRequest request = new JoinGameRequest(currentAuthToken,color.toLowerCase(),gameID);
