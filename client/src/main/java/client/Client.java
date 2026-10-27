@@ -132,7 +132,6 @@ public class Client implements ServerMessageObserver{
         String line = scanner.nextLine().toLowerCase();
         String[] command = line.split("\\s+");
         int commandCount = command.length;
-
         if(command[0].equals("help") && commandCount == 1){
             helpPostLogin();
         }
@@ -271,9 +270,7 @@ public class Client implements ServerMessageObserver{
             currentState = ClientState.POSTLOGIN;
         }
         catch(Exception e){
-            out.print("  -- FAILED TO LOGIN --\n  - ");
-            out.print(e.getMessage());
-            out.print(" -\n"); 
+            out.print("  -- FAILED TO LOGIN --\n  - " + e.getMessage() + " -\n");
         }
     }
     private void register(String username, String password, String email) {
@@ -286,9 +283,7 @@ public class Client implements ServerMessageObserver{
             currentState = ClientState.POSTLOGIN;
         }
         catch(Exception e){
-            out.print("  -- FAILED TO REGISTER --\n  - ");
-            out.print(e.getMessage());
-            out.print(" -\n");
+            out.print("  -- FAILED TO REGISTER --\n  - " + e.getMessage() + " -\n");
         }
     }
     private void logout(){
@@ -301,9 +296,7 @@ public class Client implements ServerMessageObserver{
             currentState = ClientState.PRELOGIN;
         }
         catch(Exception e){
-            out.print("  -- FAILED TO LOGOUT --\n  - ");
-            out.print(e.getMessage());
-            out.print(" -\n");
+            out.print("  -- FAILED TO LOGOUT --\n  - " + e.getMessage() + " -\n");
         }
     }
     private void createGame(String gameName){
@@ -314,9 +307,7 @@ public class Client implements ServerMessageObserver{
             out.print("  SUCCESS - Game: [" + gameName +"] has been created\n");
         }
         catch(Exception e){
-            out.print("-- FAILED TO CREATE GAME --\n  - ");
-            out.print(e.getMessage());
-            out.print(" -\n");
+            out.print("-- FAILED TO CREATE GAME --\n  - " + e.getMessage() + " -\n");
         }
     }
     private void listGames(){
@@ -350,9 +341,7 @@ public class Client implements ServerMessageObserver{
             out.println("------------------");
         }
         catch(Exception e){
-            out.print("  -- FAILED TO GET GAMES --\n  - ");
-            out.print(e.getMessage());
-            out.print(" -\n");
+            out.print("  -- FAILED TO GET GAMES --\n  - " + e.getMessage() + " -\n");
         }
     }
     private void joinGame(String gameNumberString, String color){
@@ -367,7 +356,6 @@ public class Client implements ServerMessageObserver{
             else {
                 throw new Exception("Error: Color must be WHITE or BLACK");
             }
-            
             int gameID = 0;
             GameData game = null;
             try{
@@ -383,16 +371,13 @@ public class Client implements ServerMessageObserver{
                 currentState = ClientState.GAMEPLAY;
                 currentColor = tempColor;
                 currentGame = game;
-                // screenDraw.drawGame(currentGame, currentColor);
             }
             else{
                 throw new Exception("Error: must call list games to see games first");
             }
         }
         catch(Exception e){
-            out.print("-- FAILED TO JOIN GAME --\n- ");
-            out.print(e.getMessage());
-            out.print(" -\n");
+            out.print("-- FAILED TO JOIN GAME --\n- " + e.getMessage() + " -\n");
         }
     }
     private void observeGame(String gameNumberString){
@@ -419,9 +404,7 @@ public class Client implements ServerMessageObserver{
             }
         }
         catch(Exception e){
-            out.print("-- FAILED TO OBSERVE GAME --\n- ");
-            out.print(e.getMessage());
-            out.print(" -\n");
+            out.print("-- FAILED TO OBSERVE GAME --\n- " + e.getMessage() + " -\n");
         }
     }
     private void redrawBoard(){
@@ -452,13 +435,10 @@ public class Client implements ServerMessageObserver{
             serverFacade.makeMove(command);
         }
         catch(Exception e){
-            out.print("-- FAILED TO MAKE MOVE --\n- ");
-            out.print(e.getMessage());
-            out.print(" -\n");
+            out.print("-- FAILED TO MAKE MOVE --\n- " + e.getMessage() + " -\n");
         }
     }
     private void showMoves(String piecePositionString){
-        // calculate moves locally, no call to server
         try{
             ChessPosition piecePosition = new ChessPosition(piecePositionString);
             Collection<ChessMove> possibleMoves = currentGame.game().possibleMoves(piecePosition);
