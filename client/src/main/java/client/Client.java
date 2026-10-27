@@ -382,7 +382,7 @@ public class Client implements ServerMessageObserver{
                 currentState = ClientState.GAMEPLAY;
                 currentColor = tempColor;
                 currentGame = game;
-                screenDraw.drawGame(currentGame, currentColor);
+                // screenDraw.drawGame(currentGame, currentColor);
             }
             else{
                 throw new Exception("Error: must call list games to see games first");

@@ -82,7 +82,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ServerMessage userMessage = new LoadGameMessage(gameData);
         connections.broadcast(command.getGameID(), session, userMessage,BroadcastType.ONLY_SELF);
         ServerMessage msg = new NotificationMessage(authData.username() + ": has joined the game");
-        connections.broadcast(command.getGameID(), session, msg, BroadcastType.ONLY_SELF);
+        connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL_OTHERS);
     }
 
     private void makeMove(MakeMoveCommand command, Session session) throws Exception{
