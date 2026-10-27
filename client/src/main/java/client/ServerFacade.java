@@ -110,12 +110,7 @@ public class ServerFacade {
         }
     }
     public void observeGame(JoinGameRequest joinGameRequest) throws Exception{
-        try{
-            String bodyJSON = serializer.toJson(joinGameRequest);
-            var httpResponse = sendHTTPRequest("PUT", "/game", joinGameRequest.authToken(), bodyJSON);
-            if(httpResponse.statusCode() != 200){
-                throw new Exception(httpResponse.body());
-            }
+        try{  
             UserGameCommand command = new UserGameCommand(CommandType.CONNECT, joinGameRequest.authToken(), joinGameRequest.gameID());
             ws.sendRequest(command);
         }
