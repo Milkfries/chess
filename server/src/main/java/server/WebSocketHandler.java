@@ -162,6 +162,19 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void leave(UserGameCommand command, Session session) throws Exception{
         System.out.println("Leave");
         AuthData authData = userService.getUserData(command.getAuthToken());
+        GameData gameData = gameService.getGameData(command.getGameID());
+        boolean userIsWhite = gameData.whiteUsername().equals(authData.username());
+        boolean userIsBlack = gameData.blackUsername().equals(authData.username());
+        String whiteUser = gameData.whiteUsername();
+        String blackUser = gameData.blackUsername();
+        if(userIsWhite){
+            whiteUser = null;
+        }
+        if(userIsBlack){
+            blackUser = null;
+        }
+        GameData updatedGameData = new GameData(gameData.gameID(),whiteUser,blackUser,gameData.gameName(),gameData.game());
+        gameService.updateGame(updatedGameData);
         ServerMessage msg = new NotificationMessage(authData.username() + ": has left the game");
         connections.broadcast(command.getGameID(), session, msg, BroadcastType.ALL_OTHERS);
         connections.remove(command.getGameID(),command.getAuthToken());
