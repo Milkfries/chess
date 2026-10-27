@@ -152,10 +152,10 @@ public class ChessGame {
     
     public void isValidPiece(ChessPiece piece) throws InvalidMoveException{
         if(piece == null){
-            throw new InvalidMoveException("No Piece to Move");
+            throw new InvalidMoveException("Error: No Piece to Move");
         }
         if(piece.getTeamColor() != teamTurn){
-            throw new InvalidMoveException("Move Out of Turn");
+            throw new InvalidMoveException("Error: Move Out of Turn");
         }
         return;
     }
